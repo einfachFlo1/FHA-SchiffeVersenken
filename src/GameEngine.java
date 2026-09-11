@@ -1,7 +1,7 @@
 import java.io.IOException;
 import java.util.Scanner;
 
-public class GameEngine {
+public class GameEngine extends Thread{
     private final char[][] mapMe;
     private final char[][] mapEnemy;
     private final Scanner scan;
@@ -43,15 +43,26 @@ public class GameEngine {
         return false;
     }
 
-    public boolean gameOver() {
-        for (char[] outer : mapMe)
-            for (char inner : outer)
-                if (inner != ' ' && inner != 'O' && inner != 'X') {
-                    network.sendSignal("C");
-                    return false;
-                }
-        network.sendSignal("L");
-        return true;
+    public boolean gameOver(int qual) {
+        if (qual == 1) {
+            for (char[] outer : mapMe)
+                for (char inner : outer)
+                    if (inner != ' ' && inner != '≈' && inner != '⊗') {
+                        network.sendSignal("C");
+                        return false;
+                    }
+            network.sendSignal("L");
+            System.out.println("Du hast verloren...");
+            try { sleep(1000);} catch (InterruptedException e) {throw new RuntimeException(e);}
+            return true;
+        } else {
+            if (network.receiveSignal().equals("L")) {
+                System.out.println("Du hast gewonnen!");
+                try { sleep(1000);} catch (InterruptedException e) {throw new RuntimeException(e);}
+                return true;
+            }
+        }
+        return false;
     }
 
     public void gameBegin() {
@@ -60,21 +71,30 @@ public class GameEngine {
         System.out.println("\nBitte Platziere nun deine Schiffe. Zur Auswahl stehen:\n 1.) ■ | ■ | ■ | ■ | ■\n 2.) ■ | ■ | ■ | ■\n 3.) ■ | ■ | ■\n 4.) ■ | ■ | ■");
         System.out.println("\nDie schiffe kannst du platzieren, indem du die Nummer, sowie den Start- und Endpunkt angibst.");
         placePieces("*****", "****", "***", "***");
+        System.out.println("Der Kampf beginnt!\n");
 
-        while (!gameOver() && !network.receiveSignal().equals("L")) {
-            if (network.role != 1) {
+        try { sleep(1000);} catch (InterruptedException e) {throw new RuntimeException(e);}
+
+        if (network.role != 1) {
+            String order = Integer.toString(((int) (Math.random() * 10)) % 2);
+            network.sendSignal(order);
+            if ("0".equals(order)) {
                 attacked();
-                attack();
-            } else {
-                attack();
+                network.sendSignal("C");
+            }
+        } else {
+            if ("1".equals(network.receiveSignal())) {
                 attacked();
+                network.sendSignal("C");
             }
         }
-        try {
-            network.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        while (true) {
+            attack();
+            if (gameOver(0)) break;
+            attacked();
+            if (gameOver(1)) break;
         }
+        try { network.close(); } catch (IOException e) {throw new RuntimeException(e);}
     }
 
     private void placePieces(String boot1, String boot2, String boot3, String boot4) {
@@ -144,6 +164,14 @@ public class GameEngine {
         printMap();
         return true;
     }
+
+    private boolean checkDestroyed(int x, int y) {
+        for (int outer = 0; outer < 10; outer++)
+            for (int inner = 0; inner < 10; inner++)
+                if (mapMe[outer][inner] == mapMe[x][y] && outer != x && inner != y)
+                    return false;
+        return true;
+    }
     
     public void attack() {
         System.out.println("Jetzt darfst du angreifen! Welches Feld?");
@@ -154,17 +182,26 @@ public class GameEngine {
         int y = input.charAt(1)-48;
 
         if (mapEnemy[x][y] == '⊗' || mapEnemy[x][y] == '≈') {
-            System.out.println("Bitte greife kein bereits angegriffenes Feld an!");
+            System.out.println("Bitte greife kein bereits angegriffenes Feld an!\n");
             attack();
         } else {
             network.sendSignal(input);
-            if (network.receiveSignal().equals("O")) {
-                mapEnemy[x][y] = '≈';
-                System.out.println("Leider daneben. Nächstes mal!");
-            } else {
-                mapEnemy[x][y] = '⊗';
-                System.out.println("Getroffen!");
-            }
+            input = network.receiveSignal();
+            try {
+                if (input.equals("O")) {
+                    mapEnemy[x][y] = '≈';
+                    System.out.println("Leider daneben. Nächstes mal!\n");
+                    sleep(1000);
+                } else if (input.equals("X")) {
+                    mapEnemy[x][y] = '⊗';
+                    System.out.println("Getroffen!\n");
+                    sleep(1000);
+                } else {
+                    mapEnemy[x][y] = '⊗';
+                    System.out.println("Schiff zerstört!\n");
+                    sleep(1000);
+                }
+            } catch (InterruptedException e) {throw new RuntimeException(e);}
         }
         printMap();
     }
@@ -176,14 +213,26 @@ public class GameEngine {
             int x = input.charAt(0) - 97;
             int y = input.charAt(1) - 48;
 
-            if (mapMe[x][y] == ' ') {
-                mapMe[x][y] = '≈';
-                System.out.println("Verfehlt");
-                network.sendSignal("O");
-            } else {
-                mapMe[x][y] = '⊗';
-                System.out.println("Du wurdest getroffen!");
-                network.sendSignal("X");
+            try {
+                if (mapMe[x][y] == ' ') {
+                    mapMe[x][y] = '≈';
+                    System.out.println("Verfehlt\n");
+                    sleep(1000);
+                    network.sendSignal("O");
+                } else {
+                    if (!checkDestroyed(x, y)) {
+                        System.out.println("Dein Schiff wurde zerstört!\n");
+                        sleep(1000);
+                        network.sendSignal("XX");
+                    } else {
+                        System.out.println("Du wurdest getroffen!\n");
+                        sleep(1000);
+                        network.sendSignal("X");
+                    }
+                    mapMe[x][y] = '⊗';
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
             printMap();
         } else attacked();
