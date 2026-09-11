@@ -60,11 +60,15 @@ public class GameEngine {
         System.out.println("\nBitte Platziere nun deine Schiffe. Zur Auswahl stehen:\n 1.) ■ | ■ | ■ | ■ | ■\n 2.) ■ | ■ | ■ | ■\n 3.) ■ | ■ | ■\n 4.) ■ | ■ | ■");
         System.out.println("\nDie schiffe kannst du platzieren, indem du die Nummer, sowie den Start- und Endpunkt angibst.");
         placePieces("*****", "****", "***", "***");
-        if (network.role != 1)
-            attacked();
+
         while (!gameOver() && !network.receiveSignal().equals("L")) {
-            attack();
-            attacked();
+            if (network.role != 1) {
+                attacked();
+                attack();
+            } else {
+                attack();
+                attacked();
+            }
         }
         try {
             network.close();
@@ -98,10 +102,12 @@ public class GameEngine {
                 } else {
                     System.out.println("Dieses Boot ist nicht mehr verfügbar. Bitte geben Sie es erneut ein");
                     placePieces(boot1, boot2, boot3, boot4);
+                    break;
                 }
             } else {
                 System.out.println("Keine gültige Eingabe, bitte geben Sie es erneut ein");
                 placePieces(boot1, boot2, boot3, boot4);
+                break;
             }
             System.out.println("Noch übrig:\n 1.) " + boot1 + "\n 2.) " + boot2 + "\n 3.) " + boot3 + "\n 4.) " + boot4 + "\n");
         }
@@ -164,20 +170,23 @@ public class GameEngine {
     }
 
     public void attacked() {
+        System.out.println("Dein gegner greift an...");
         String input = network.receiveSignal();
-        int x = input.charAt(0) - 97;
-        int y = input.charAt(1) - 48;
+        if (validateInput(input)) {
+            int x = input.charAt(0) - 97;
+            int y = input.charAt(1) - 48;
 
-        if (mapMe[x][y] == ' ') {
-            mapMe[x][y] = '≈';
-            System.out.println("Verfehlt");
-            network.sendSignal("O");
-        } else {
-            mapMe[x][y] = '⊗';
-            System.out.println("Du wurdest getroffen!");
-            network.sendSignal("X");
-        }
-        printMap();
+            if (mapMe[x][y] == ' ') {
+                mapMe[x][y] = '≈';
+                System.out.println("Verfehlt");
+                network.sendSignal("O");
+            } else {
+                mapMe[x][y] = '⊗';
+                System.out.println("Du wurdest getroffen!");
+                network.sendSignal("X");
+            }
+            printMap();
+        } else attacked();
     }
 
     private void printBoat(char field) {

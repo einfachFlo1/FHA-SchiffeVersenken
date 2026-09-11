@@ -28,8 +28,10 @@ public class Network {
             clientSocket = serverSocket.accept();
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            if ("Trying to connect...".equals(in.readLine()))
+            if ("Trying to connect...".equals(in.readLine())) {
+                out.println("Connected");
                 System.out.println("Connected");
+            }
         } else {
             clientSocket = new Socket(ip, 6666);
             out = new PrintWriter(clientSocket.getOutputStream(), true);
