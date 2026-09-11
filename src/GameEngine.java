@@ -37,7 +37,7 @@ public class GameEngine extends Thread{
     }
 
     private boolean validateInput(String input) {
-        if (input.length() >= 2 && input.charAt(0) >= 97 || input.charAt(0) <= 106 && input.charAt(1) >= 48 || input.charAt(1) <= 57)
+        if (input.length() == 2 && input.charAt(0) >= 97 && input.charAt(0) <= 106 && input.charAt(1) >= 48 || input.charAt(1) <= 57)
             return true;
         System.out.println("Bitte gib ein valides Feld ein!");
         return false;
@@ -168,9 +168,9 @@ public class GameEngine extends Thread{
     private boolean checkDestroyed(int x, int y) {
         for (int outer = 0; outer < 10; outer++)
             for (int inner = 0; inner < 10; inner++)
-                if (mapMe[outer][inner] == mapMe[x][y] && outer != x && inner != y)
-                    return false;
-        return true;
+                if ((int) mapMe[outer][inner] == (int) mapMe[x][y] && (outer != x || inner != y))
+                    return true;
+        return false;
     }
     
     public void attack() {

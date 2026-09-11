@@ -12,10 +12,11 @@ public class Network {
 
     public Network() {
         Scanner scan = new Scanner(System.in);
-        System.out.println("Host(H) or Client(C)?\n");
-        if (scan.next().equals("H"))
+        System.out.println("Host(H) oder Client(C)?\n");
+        if (scan.next().equals("H")) {
             role = 1;
-        else {
+            System.out.println("Warte auf Client...");
+        } else {
             role = 0;
             System.out.println("Bitte gib die IP ein...");
             ip = scan.next();
@@ -28,18 +29,18 @@ public class Network {
             clientSocket = serverSocket.accept();
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            if ("Trying to connect...".equals(in.readLine())) {
-                out.println("Connected");
-                System.out.println("Connected");
+            if ("Verbinde...".equals(in.readLine())) {
+                out.println("Verbunden!");
+                System.out.println("Verbunden!");
             }
         } else {
             clientSocket = new Socket(ip, 6666);
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            out.println("Trying to connect...");
-            System.out.println("Trying to connect...");
-            if ("Connected".equals(in.readLine()))
-                System.out.println("Connected");
+            out.println("Verbinde...");
+            System.out.println("Verbinde...");
+            if ("Verbunden!".equals(in.readLine()))
+                System.out.println("Verbunden!");
         }
     }
 
