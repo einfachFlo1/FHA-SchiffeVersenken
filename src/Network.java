@@ -29,14 +29,15 @@ public class Network {
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             if ("Trying to connect...".equals(in.readLine()))
-                out.println("Connected");
+                System.out.println("Connected");
         } else {
             clientSocket = new Socket(ip, 5000);
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             out.println("Trying to connect...");
+            System.out.println("Trying to connect...");
             if ("Connected".equals(in.readLine()))
-                out.println("Connected");
+                System.out.println("Connected");
         }
     }
 
