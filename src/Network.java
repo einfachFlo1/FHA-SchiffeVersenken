@@ -24,14 +24,14 @@ public class Network {
 
     public void buildConnection() throws IOException {
         if (role == 1) {
-            serverSocket = new ServerSocket(5000);
+            serverSocket = new ServerSocket(6666);
             clientSocket = serverSocket.accept();
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             if ("Trying to connect...".equals(in.readLine()))
                 System.out.println("Connected");
         } else {
-            clientSocket = new Socket(ip, 5000);
+            clientSocket = new Socket(ip, 6666);
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             out.println("Trying to connect...");
