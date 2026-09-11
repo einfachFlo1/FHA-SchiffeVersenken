@@ -37,7 +37,7 @@ public class GameEngine extends Thread{
     }
 
     private boolean validateInput(String input) {
-        if (input.length() == 2 && input.charAt(0) >= 97 && input.charAt(0) <= 106 && input.charAt(1) >= 48 || input.charAt(1) <= 57)
+        if (input.length() == 2 && input.charAt(0) >= 97 && input.charAt(0) <= 106 && input.charAt(1) >= 48 && input.charAt(1) <= 57)
             return true;
         System.out.println("Bitte gib ein valides Feld ein!");
         return false;
@@ -178,32 +178,36 @@ public class GameEngine extends Thread{
         String input = scan.next();
         if (!validateInput(input))
             attack();
-        int x = input.charAt(0)-97;
-        int y = input.charAt(1)-48;
+        else {
+            int x = input.charAt(0) - 97;
+            int y = input.charAt(1) - 48;
 
-        if (mapEnemy[x][y] == '⊗' || mapEnemy[x][y] == '≈') {
-            System.out.println("Bitte greife kein bereits angegriffenes Feld an!\n");
-            attack();
-        } else {
-            network.sendSignal(input);
-            input = network.receiveSignal();
-            try {
-                if (input.equals("O")) {
-                    mapEnemy[x][y] = '≈';
-                    System.out.println("Leider daneben. Nächstes mal!\n");
-                    sleep(1000);
-                } else if (input.equals("X")) {
-                    mapEnemy[x][y] = '⊗';
-                    System.out.println("Getroffen!\n");
-                    sleep(1000);
-                } else {
-                    mapEnemy[x][y] = '⊗';
-                    System.out.println("Schiff zerstört!\n");
-                    sleep(1000);
+            if (mapEnemy[x][y] == '⊗' || mapEnemy[x][y] == '≈') {
+                System.out.println("Bitte greife kein bereits angegriffenes Feld an!\n");
+                attack();
+            } else {
+                network.sendSignal(input);
+                input = network.receiveSignal();
+                try {
+                    if (input.equals("O")) {
+                        mapEnemy[x][y] = '≈';
+                        System.out.println("Leider daneben. Nächstes mal!\n");
+                        sleep(1000);
+                    } else if (input.equals("X")) {
+                        mapEnemy[x][y] = '⊗';
+                        System.out.println("Getroffen!\n");
+                        sleep(1000);
+                    } else {
+                        mapEnemy[x][y] = '⊗';
+                        System.out.println("Schiff zerstört!\n");
+                        sleep(1000);
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
-            } catch (InterruptedException e) {throw new RuntimeException(e);}
+            }
+            printMap();
         }
-        printMap();
     }
 
     public void attacked() {
