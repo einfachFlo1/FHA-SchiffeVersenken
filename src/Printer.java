@@ -65,8 +65,8 @@ public class Printer extends Thread{
     //Output map
     public void     setLanguage()                           {
         Scanner scan = new Scanner(System.in);
-        System.out.println("Which language? (d/e)");
-        if ("e".equals(scan.next())) {
+        System.out.println("Which language? (D/E)");
+        if ("E".equals(scan.next())) {
             hostOrClientMess    = "Host(H) or client(any input)?";
             waitClientMess      = "Waiting for client...";
             enterIPMess         = "Please enter the IP...";

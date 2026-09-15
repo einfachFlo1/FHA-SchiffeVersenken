@@ -8,9 +8,9 @@ public class GameEngine extends Thread{
     private final Network   network;
     private final Printer   printer;
     private char            indexB;
-    private boolean pU1;
-    private boolean pU2;
-    private char pU3;
+    private boolean         pU1;
+    private boolean         pU2;
+    private char            pU3;
 
     public GameEngine() {
         this.mapMe      = new char[10][10];
