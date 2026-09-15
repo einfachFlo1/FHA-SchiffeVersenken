@@ -32,7 +32,7 @@ public class GameEngine extends Thread{
         } catch (IOException | InterruptedException e) {throw new RuntimeException(e);}
     }
 
-    //Getter/Setter
+    //Getter
     public char[][] getMapMe()      {return mapMe;}
     public char[][] getMapEnemy()   {return mapEnemy;}
     public boolean  getPU1()        {return pU1;}
@@ -88,7 +88,7 @@ public class GameEngine extends Thread{
         return (input.length() == 2 && input.charAt(0) >= 97 && input.charAt(0) <= 106 && input.charAt(1) >= 48 && input.charAt(1) <= 57);
     }
 
-    //Game begin, placing ships
+    //Placing ships
     private void    placePieces(String boot1, String boot2, String boot3, String boot4) {
         int     id;
         String  inputStart;

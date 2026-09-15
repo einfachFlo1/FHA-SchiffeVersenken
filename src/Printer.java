@@ -125,16 +125,6 @@ public class Printer extends Thread{
         if (engine.getPU3() == tries2) System.out.print(" (x2)");
         System.out.println(backToAttackMess);
     }
-    private void    printBoat(char field)                   {
-        switch (field) {
-            case '⊗': System.out.print(RED + field + RESET);    break;
-            case '≈': System.out.print(BLUE + field + RESET);   break;
-            case 1: System.out.print(YELLOW + '■' + RESET);     break;
-            case 2: System.out.print(CYAN + '■' + RESET);       break;
-            case 3: System.out.print(MAGENTA + '■' + RESET);    break;
-            case 4: System.out.print(GREEN + '■' + RESET);      break;
-            default: System.out.print(Printer.empty);}
-    }
     public void     printMap()                              {
         System.out.println(battlefieldTitleMess);
         System.out.println("     0   1   2   3   4   5   6   7   8   9                           0   1   2   3   4   5   6   7   8   9  ");
@@ -151,4 +141,14 @@ public class Printer extends Thread{
                 printBoat(inner);
                 System.out.print(" ");}
             System.out.println("|\n   -----------------------------------------                       ----------------------------------------- ");}}
+    private void    printBoat(char field)                   {
+        switch (field) {
+            case '⊗': System.out.print(RED + field + RESET);    break;
+            case '≈': System.out.print(BLUE + field + RESET);   break;
+            case 1: System.out.print(YELLOW + '■' + RESET);     break;
+            case 2: System.out.print(CYAN + '■' + RESET);       break;
+            case 3: System.out.print(MAGENTA + '■' + RESET);    break;
+            case 4: System.out.print(GREEN + '■' + RESET);      break;
+            default: System.out.print(Printer.empty);}
+    }
 }
