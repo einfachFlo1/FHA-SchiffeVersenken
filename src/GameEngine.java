@@ -153,9 +153,9 @@ public class GameEngine extends Thread{
     }
 
     //Attacking
-    private void    powerUpEvaluate(String hitlist) {
+    private void    powerUpEvaluate(String hitList) {
         String input;
-        for (int x = hitlist.charAt(0) - 97, y = hitlist.charAt(1) - 48; hitlist.length() > 3; hitlist = hitlist.substring(3), x = hitlist.charAt(0) - 97, y = hitlist.charAt(1) - 48) {
+        for (int x = hitList.charAt(0) - 97, y = hitList.charAt(1) - 48; hitList.length() > 3; hitList = hitList.substring(3), x = hitList.charAt(0) - 97, y = hitList.charAt(1) - 48) {
             input = network.receiveSignal();
             if (x >= 0 && y >= 0 && x <= 9 && y <= 9) {
                 if (input.equals(Printer.missSignal))

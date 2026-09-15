@@ -11,7 +11,7 @@ public class Network {
     private BufferedReader  in;
     private String          ip;
 
-    //Quelle: https://www.baeldung.com/a-guide-to-java-sockets
+    //Source: https://www.baeldung.com/a-guide-to-java-sockets
     public          Network(Printer printer)                {
         Scanner scan = new Scanner(System.in);
         this.printer = printer;
