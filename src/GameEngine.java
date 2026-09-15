@@ -46,10 +46,10 @@ public class GameEngine extends Thread{
         try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
         System.out.println(printer.gameBeginMess2);
         System.out.println(printer.gameBeginMess3);
-        placePieces("■ | ■ | ■ | ■ | ■", "■ | ■ | ■ | ■", "■ | ■ | ■", "■ | ■ | ■");
+        placePieces("■ | ■ | ■ | ■ | ■", "■ | ■ | ■ | ■", "■ | ■ | ■", "■ | ■ | ■");                                    //Starts placing the ships
         System.out.println(printer.gameBeginMess4);
         try { sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
-        if (network.role != 1) {
+        if (network.role != 1) {                                                                                        //Condition deciding, who starts
             String order = Integer.toString(((int) (Math.random() * 10)) % 2);
             network.sendSignal(order);
             if ("0".equals(order)) {
@@ -59,7 +59,7 @@ public class GameEngine extends Thread{
             if ("1".equals(network.receiveSignal())) {
                 attacked();
                 network.sendSignal(Printer.cont);}}
-        while (true) {
+        while (true) {                                                                                                  //Main game loop
             attack();
             if (gameOver(0)) break;
             attacked();
@@ -67,7 +67,7 @@ public class GameEngine extends Thread{
         try { network.closeConnection(); } catch (IOException e) {throw new RuntimeException(e);}
     }
     private boolean gameOver(int qualifier) {
-        if (qualifier == 1) {
+        if (qualifier == 1) {                                                                                           //Checks, if i lost
             for (char[] outer : mapMe)
                 for (char inner : outer)
                     if (inner != ' ' && inner != Printer.miss && inner != Printer.hit) {
@@ -76,7 +76,7 @@ public class GameEngine extends Thread{
             network.sendSignal(Printer.end);
             System.out.println(printer.loseMess);
             return true;
-        } else {
+        } else {                                                                                                        //Checks, if enemy lost
             if (network.receiveSignal().equals(Printer.end)) {
                 System.out.println(printer.winMess);
                 return true;}}
@@ -84,42 +84,42 @@ public class GameEngine extends Thread{
     }
 
     //Helper method
-    private boolean validateInput(String input) {
+    private boolean validateInput(String input) {                                                                       //Checks, if input is valid or not
         return (input.length() == 2 && input.charAt(0) >= 97 && input.charAt(0) <= 106 && input.charAt(1) >= 48 && input.charAt(1) <= 57);
     }
 
     //Placing ships
-    private void    placePieces(String boot1, String boot2, String boot3, String boot4) {
+    private void    placePieces(String boat1, String boat2, String boat3, String boat4) {
         int     id;
         String  inputStart;
         String  inputEnd;
-        while (!boot1.equals(boot2) || !boot1.equals(boot3) || !boot1.equals(boot4)) {
+        while (!boat1.equals(boat2) || !boat1.equals(boat3) || !boat1.equals(boat4)) {                                  //loops, while not all boats are placed
             inputStart   = scan.next();
             inputEnd     = scan.next();
-            if (validateInput(inputStart) && validateInput(inputEnd)) {
+            if (validateInput(inputStart) && validateInput(inputEnd)) {                                                 //Checks distance between start and end, to identify the boat
                 id = Math.abs(((int) inputStart.charAt(0) - (int) inputEnd.charAt(0)) - ((int) inputStart.charAt(1) - (int) inputEnd.charAt(1)));
-                if (id == 4 && !boot1.equals(Printer.dismiss)) {
+                if (id == 4 && !boat1.equals(Printer.dismiss)) {
                     if (placeDots(inputStart.charAt(0) - 97, inputStart.charAt(1) - 48, inputEnd.charAt(0) - 97, inputEnd.charAt(1) - 48))
-                        boot1 = Printer.dismiss;
-                } else if (id == 3 && !boot2.equals(Printer.dismiss)) {
+                        boat1 = Printer.dismiss;
+                } else if (id == 3 && !boat2.equals(Printer.dismiss)) {
                     if (placeDots(inputStart.charAt(0) - 97, inputStart.charAt(1) - 48, inputEnd.charAt(0) - 97, inputEnd.charAt(1) - 48))
-                        boot2 = Printer.dismiss;
-                } else if (id == 2 && !boot3.equals(Printer.dismiss)) {
+                        boat2 = Printer.dismiss;
+                } else if (id == 2 && !boat3.equals(Printer.dismiss)) {
                     if (placeDots(inputStart.charAt(0) - 97, inputStart.charAt(1) - 48, inputEnd.charAt(0) - 97, inputEnd.charAt(1) - 48))
-                        boot3 = Printer.dismiss;
-                } else if (id == 2 && !boot4.equals(Printer.dismiss)) {
+                        boat3 = Printer.dismiss;
+                } else if (id == 2 && !boat4.equals(Printer.dismiss)) {
                     if (placeDots(inputStart.charAt(0) - 97, inputStart.charAt(1) - 48, inputEnd.charAt(0) - 97, inputEnd.charAt(1) - 48))
-                        boot4 = Printer.dismiss;
+                        boat4 = Printer.dismiss;
                 } else {
                     System.out.println(printer.notValidMess);
-                    placePieces(boot1, boot2, boot3, boot4);
+                    placePieces(boat1, boat2, boat3, boat4);
                     break;}
             } else {
                 System.out.println(printer.notValidRetryMess);
-                placePieces(boot1, boot2, boot3, boot4);
+                placePieces(boat1, boat2, boat3, boat4);
                 break;}
-            if (!boot1.equals(boot2) || !boot1.equals(boot3) || !boot1.equals(boot4)) {
-            System.out.println(printer.stillOpenMess + "\n 1.) " + boot1 + "\n 2.) " + boot2 + "\n 3.) " + boot3 + "\n 4.) " + boot4 + "\n");
+            if (!boat1.equals(boat2) || !boat1.equals(boat3) || !boat1.equals(boat4)) {
+            System.out.println(printer.stillOpenMess + "\n 1.) " + boat1 + "\n 2.) " + boat2 + "\n 3.) " + boat3 + "\n 4.) " + boat4 + "\n");
             System.out.println(printer.placeNext);}}
     }
     private boolean placeDots(int start0, int start1, int end0, int end1)               {
@@ -127,7 +127,7 @@ public class GameEngine extends Thread{
         int runV2 = end1;
         int runH1 = start0;
         int runH2 = end0;
-        if (start0 > end0) {
+        if (start0 > end0) {                                                                                            //Potentially swaps coordinates, if start > end
             runH1 = end0;
             runH2 = start0;
         } else if (start1 > end1) {
@@ -135,14 +135,14 @@ public class GameEngine extends Thread{
             runV2 = start1;}
         int cpyV1 = runV1;
         int cpyH1 = runH1;
-        for (; runH1 <= runH2; runH1++) {
+        for (; runH1 <= runH2; runH1++) {                                                                               //Checks, if boats are placeable
             for (; runV1 <= runV2; runV1++)
                 if (mapMe[runH1][runV1] != Printer.empty) {
                     System.out.println(printer.notValidMess);
                     return false;}
             runV1 = cpyV1;}
         runH1 = cpyH1;
-        for (; runH1 <= runH2; runH1++) {
+        for (; runH1 <= runH2; runH1++) {                                                                               //Places boats
             for (; runV1 <= runV2; runV1++)
                 mapMe[runH1][runV1] = indexB;
             runV1 = cpyV1;}
@@ -154,7 +154,7 @@ public class GameEngine extends Thread{
 
     //Attacking
     private void    powerUpEvaluate(String hitList) {
-        String input;
+        String input;                                                                                                   //evaluates output list while receiving hit/miss signals from defender
         for (int x = hitList.charAt(0) - 97, y = hitList.charAt(1) - 48; hitList.length() > 3; hitList = hitList.substring(3), x = hitList.charAt(0) - 97, y = hitList.charAt(1) - 48) {
             input = network.receiveSignal();
             if (x >= 0 && y >= 0 && x <= 9 && y <= 9) {
@@ -164,28 +164,28 @@ public class GameEngine extends Thread{
                     mapEnemy[x][y] = Printer.hit;}}
     }
     private boolean powerUp1()                      {
-        System.out.println(printer.powerUp1Mess);
+        System.out.println(printer.powerUp1Mess);                                                                       //makes attack list
         String input = scan.next();
         String output = "";
         try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
-        if (input.charAt(0) < 97 || input.charAt(0) > 106) {
+        if (input.charAt(0) < 97 || input.charAt(0) > 106) {                                                            //based on column
             for (int counter = 0; counter < 11; counter++)
                 output = output + (char) (counter + 97) + input.charAt(0) + Printer.empty;
-        } else if (input.charAt(0) < 48 || input.charAt(0) > 57) {
+        } else if (input.charAt(0) < 48 || input.charAt(0) > 57) {                                                      //based on row
             for (int counter = 0; counter < 11; counter++)
                 output = output + input.charAt(0) + (char) (counter + 48) + Printer.empty;
         } else {
-            System.out.println(printer.notValidMess);
+            System.out.println(printer.notValidMess);                                                                   //input error
             return false;}
         network.sendSignal(Printer.pU1);
         network.sendSignal(output);
         powerUpEvaluate(output);
-        pU1 = false;
+        pU1 = false;                                                                                                    //power up used
         try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
         printer.printMap();
         return true;
     }
-    private char    powerUp2Rand(char input)        {
+    private char    powerUp2Rand(char input)        {                                                                   //Gives back position 0-2 steps from input position
         int num = ((int)(Math.random() * 10)) % 3;
         if (((int)(Math.random() * 10)) % 2 == 0) {
             return (char) ((input - num));
