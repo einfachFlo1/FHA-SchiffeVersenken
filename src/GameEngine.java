@@ -153,9 +153,9 @@ public class GameEngine extends Thread{
     }
 
     //Attacking
-    private void    powerUpInput(String in)     {
+    private void    powerUpEvaluate(String hitlist) {
         String input;
-        for (int x = in.charAt(0) - 97, y = in.charAt(1) - 48; in.length() > 3; in = in.substring(3), x = in.charAt(0) - 97, y = in.charAt(1) - 48) {
+        for (int x = hitlist.charAt(0) - 97, y = hitlist.charAt(1) - 48; hitlist.length() > 3; hitlist = hitlist.substring(3), x = hitlist.charAt(0) - 97, y = hitlist.charAt(1) - 48) {
             input = network.receiveSignal();
             if (x >= 0 && y >= 0 && x <= 9 && y <= 9) {
                 if (input.equals(Printer.missSignal))
@@ -163,14 +163,7 @@ public class GameEngine extends Thread{
                 else
                     mapEnemy[x][y] = Printer.hit;}}
     }
-    private char    powerUpRand(char input)     {
-        int num = ((int)(Math.random() * 10)) % 3;
-        if (((int)(Math.random() * 10)) % 2 == 0) {
-            return (char) ((input - num));
-        } else {
-            return (char) ((input + num));}
-    }
-    private boolean powerUp1()                  {
+    private boolean powerUp1()                      {
         System.out.println(printer.powerUp1Mess);
         String input = scan.next();
         String output = "";
@@ -186,13 +179,20 @@ public class GameEngine extends Thread{
             return false;}
         network.sendSignal(Printer.pU1);
         network.sendSignal(output);
-        powerUpInput(output);
+        powerUpEvaluate(output);
         pU1 = false;
         try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
         printer.printMap();
         return true;
     }
-    private boolean powerUp2()                  {
+    private char    powerUp2Rand(char input)        {
+        int num = ((int)(Math.random() * 10)) % 3;
+        if (((int)(Math.random() * 10)) % 2 == 0) {
+            return (char) ((input - num));
+        } else {
+            return (char) ((input + num));}
+    }
+    private boolean powerUp2()                      {
         System.out.println(printer.powerUp2Mess);
         String input = scan.next();
         try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
@@ -202,20 +202,20 @@ public class GameEngine extends Thread{
             System.out.println(printer.notValidMess);
             return false;}
         for (int counter = 0; counter < 11;) {
-            strive = strive + powerUpRand(input.charAt(0)) + powerUpRand(input.charAt(1));
+            strive = strive + powerUp2Rand(input.charAt(0)) + powerUp2Rand(input.charAt(1));
             if (!output.contains(strive) && !strive.equals(input)) {
                 output = output + strive + Printer.empty;
                 counter++;}
             strive = "";}
         network.sendSignal(Printer.pU2);
         network.sendSignal(output);
-        powerUpInput(output);
+        powerUpEvaluate(output);
         pU2 = false;
         try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
         printer.printMap();
         return true;
     }
-    private boolean powerUp3()                  {
+    private boolean powerUp3()                      {
         System.out.println(printer.powerUp3Mess);
         String input = scan.next();
         String output;
@@ -238,7 +238,7 @@ public class GameEngine extends Thread{
         else pU3 = Printer.empty;
         return true;
     }
-    private boolean attackPowerUp(String input) {
+    private boolean attackPowerUp(String input)     {
         if (input.equals("power")) {
             printer.printPowerUp();
             input = scan.next();
@@ -248,7 +248,7 @@ public class GameEngine extends Thread{
             else if (input.equals("4")) {attack();                                              return true;}}
         return false;
     }
-    private void    attack()                    {
+    private void    attack()                        {
         System.out.println(printer.attackMess);
         String input = scan.next();
         if ((!pU1 && !pU2 && pU3 == Printer.empty || !attackPowerUp(input))) {
@@ -283,7 +283,7 @@ public class GameEngine extends Thread{
     }
 
     //Being attacked
-    private String  searchBoat(String input, int distance)  {
+    private String  powerUp3Search(String input, int distance)  {
         String output = Printer.missSignal;
         for (int x = input.charAt(0) - 97 - distance; x <= input.charAt(0) - 97 + distance; x++)
             for (int y = input.charAt(1) - 48 - distance; y <= input.charAt(1) - 48 + distance; y++) {
@@ -293,18 +293,18 @@ public class GameEngine extends Thread{
                         System.out.println(printer.hitMess);
                         return ("" + ((char) (x + 97)) + ((char) (y + 48)));}}
         if (distance < 2)
-            return searchBoat(input, distance + 1);
+            return powerUp3Search(input, distance + 1);
         System.out.println(printer.missedMess);
         return output;
     }
-    private boolean checkDestroyed(int x, int y)            {
+    private boolean checkDestroyed(int x, int y)                {
         for (int outer = 0; outer < 10; outer++)
             for (int inner = 0; inner < 10; inner++)
                 if ((int) mapMe[outer][inner] == (int) mapMe[x][y] && (outer != x || inner != y))
                     return true;
         return false;
     }
-    private boolean attackedPowerUp(String input)           {
+    private boolean attackedPowerUp(String input)               {
         String inputSignal;
         if (input.equals(Printer.pU1) || input.equals(Printer.pU2)) {
             System.out.println(printer.powerUpUsedMess);
@@ -320,11 +320,11 @@ public class GameEngine extends Thread{
                 } else network.sendSignal(Printer.dismiss);}
             return true;
         } else if (input.equals(Printer.pU3)) {
-            network.sendSignal(searchBoat(network.receiveSignal(), 0));
+            network.sendSignal(powerUp3Search(network.receiveSignal(), 0));
             return true;}
         return false;
     }
-    private void    attacked()                              {
+    private void    attacked()                                  {
         Thread printDots = new Printer(this);
         System.out.println(printer.enemyAttackMess);
         printDots.start();

@@ -24,6 +24,7 @@ public class Network {
             System.out.println(printer.enterIPMess);
             ip = scan.next();}
     }
+
     public void     buildConnection() throws IOException    {
         if (role == 1) {
             serverSocket = new ServerSocket(6666);
