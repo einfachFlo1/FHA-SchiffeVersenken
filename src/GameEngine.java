@@ -2,143 +2,131 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class GameEngine extends Thread{
-    private final char[][] mapMe;
-    private final char[][] mapEnemy;
-    private final Scanner scan;
-    private final Network network;
-    private char indexB;
-
-    public static final String RESET = "\u001B[0m";
-    public static final String RED = "\u001B[31m";
-    public static final String GREEN = "\u001B[32m";
-    public static final String YELLOW = "\u001B[33m";
-    public static final String BLUE = "\u001B[34m";
-    public static final String CYAN = "\u001B[36m";
-    public static final String MAGENTA = "\u001B[35m";
+    private final char[][]  mapMe;
+    private final char[][]  mapEnemy;
+    private final Scanner   scan;
+    private final Network   network;
+    private final Printer   printer;
+    private char            indexB;
+    private boolean pU1;
+    private boolean pU2;
+    private char pU3;
 
     public GameEngine() {
-        this.mapMe = new char[10][10];
-        this.mapEnemy = new char[10][10];
-        this.network = new Network();
-        scan = new Scanner(System.in);
+        this.mapMe      = new char[10][10];
+        this.mapEnemy   = new char[10][10];
+        this.printer    = new Printer(this);
+        this.printer.setLanguage();
+        this.network    = new Network(printer);
+        scan            = new Scanner(System.in);
+        indexB  = 1;
+        pU1 = true;
+        pU2 = true;
+        pU3 = Printer.tries2;
         for (int outer = 0; outer != 10; outer++) {
             for (int inner = 0; inner != 10; inner++)
                 mapMe[outer][inner] = 32;
             for (int inner = 0; inner != 10; inner++)
-                mapEnemy[outer][inner] = 32;
-        }
-        indexB = 1;
-        try {
-            network.buildConnection();
-        } catch (IOException e) {
-            System.out.println("Verbindung konnte nicht aufgebaut werden :(");
-            throw new RuntimeException(e);
-        }
+                mapEnemy[outer][inner] = 32;}
+        try {network.buildConnection(); sleep(700);
+        } catch (IOException | InterruptedException e) {throw new RuntimeException(e);}
     }
 
-    private boolean validateInput(String input) {
-        if (input.length() == 2 && input.charAt(0) >= 97 && input.charAt(0) <= 106 && input.charAt(1) >= 48 && input.charAt(1) <= 57)
-            return true;
-        System.out.println("Bitte gib ein valides Feld ein!");
-        return false;
-    }
+    //Getter/Setter
+    public char[][] getMapMe()      {return mapMe;}
+    public char[][] getMapEnemy()   {return mapEnemy;}
+    public boolean  getPU1()        {return pU1;}
+    public boolean  getPU2()        {return pU2;}
+    public char     getPU3()        {return pU3;}
 
-    public boolean gameOver(int qual) {
-        if (qual == 1) {
-            for (char[] outer : mapMe)
-                for (char inner : outer)
-                    if (inner != ' ' && inner != '≈' && inner != '⊗') {
-                        network.sendSignal("C");
-                        return false;
-                    }
-            network.sendSignal("L");
-            System.out.println("Du hast verloren...");
-            try { sleep(1000);} catch (InterruptedException e) {throw new RuntimeException(e);}
-            return true;
-        } else {
-            if (network.receiveSignal().equals("L")) {
-                System.out.println("Du hast gewonnen!");
-                try { sleep(1000);} catch (InterruptedException e) {throw new RuntimeException(e);}
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void gameBegin() {
-        System.out.println("Lasst die Schlacht beginnen! \nHier einmal das Schlachtfeld!\n");
-        printMap();
-        System.out.println("\nBitte Platziere nun deine Schiffe. Zur Auswahl stehen:\n 1.) ■ | ■ | ■ | ■ | ■\n 2.) ■ | ■ | ■ | ■\n 3.) ■ | ■ | ■\n 4.) ■ | ■ | ■");
-        System.out.println("\nDie schiffe kannst du platzieren, indem du die Nummer, sowie den Start- und Endpunkt angibst.");
-        placePieces("*****", "****", "***", "***");
-        System.out.println("Der Kampf beginnt!\n");
-
-        try { sleep(1000);} catch (InterruptedException e) {throw new RuntimeException(e);}
-
+    //Game loop
+    public void     gameBegin()             {
+        System.out.println(printer.gameBeginMess1);
+        printer.printMap();
+        try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
+        System.out.println(printer.gameBeginMess2);
+        System.out.println(printer.gameBeginMess3);
+        placePieces("■ | ■ | ■ | ■ | ■", "■ | ■ | ■ | ■", "■ | ■ | ■", "■ | ■ | ■");
+        System.out.println(printer.gameBeginMess4);
+        try { sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
         if (network.role != 1) {
             String order = Integer.toString(((int) (Math.random() * 10)) % 2);
             network.sendSignal(order);
             if ("0".equals(order)) {
                 attacked();
-                network.sendSignal("C");
-            }
+                network.sendSignal(Printer.cont);}
         } else {
             if ("1".equals(network.receiveSignal())) {
                 attacked();
-                network.sendSignal("C");
-            }
-        }
+                network.sendSignal(Printer.cont);}}
         while (true) {
             attack();
             if (gameOver(0)) break;
             attacked();
-            if (gameOver(1)) break;
-        }
-        try { network.close(); } catch (IOException e) {throw new RuntimeException(e);}
+            if (gameOver(1)) break;}
+        try { network.closeConnection(); } catch (IOException e) {throw new RuntimeException(e);}
+    }
+    private boolean gameOver(int qualifier) {
+        if (qualifier == 1) {
+            for (char[] outer : mapMe)
+                for (char inner : outer)
+                    if (inner != ' ' && inner != Printer.miss && inner != Printer.hit) {
+                        network.sendSignal(Printer.cont);
+                        return false;}
+            network.sendSignal(Printer.end);
+            System.out.println(printer.loseMess);
+            return true;
+        } else {
+            if (network.receiveSignal().equals(Printer.end)) {
+                System.out.println(printer.winMess);
+                return true;}}
+        return false;
     }
 
-    private void placePieces(String boot1, String boot2, String boot3, String boot4) {
-        int nextID;
-        String nextStart;
-        String nextEnd;
+    //Helper method
+    private boolean validateInput(String input) {
+        return (input.length() == 2 && input.charAt(0) >= 97 && input.charAt(0) <= 106 && input.charAt(1) >= 48 && input.charAt(1) <= 57);
+    }
 
+    //Game begin, placing ships
+    private void    placePieces(String boot1, String boot2, String boot3, String boot4) {
+        int     id;
+        String  inputStart;
+        String  inputEnd;
         while (!boot1.equals(boot2) || !boot1.equals(boot3) || !boot1.equals(boot4)) {
-            nextStart = scan.next();
-            nextEnd = scan.next();
-            if (validateInput(nextStart) && validateInput(nextEnd)) {
-                nextID = Math.abs(((int) nextStart.charAt(0) - (int) nextEnd.charAt(0)) - ((int) nextStart.charAt(1) - (int) nextEnd.charAt(1)));
-                if (nextID == 4 && !boot1.equals("-")) {
-                    if (placeDots(nextStart.charAt(0) - 97, nextStart.charAt(1) - 48, nextEnd.charAt(0) - 97, nextEnd.charAt(1) - 48))
-                        boot1 = "-";
-                } else if (nextID == 3 && !boot2.equals("-")) {
-                    if (placeDots(nextStart.charAt(0) - 97, nextStart.charAt(1) - 48, nextEnd.charAt(0) - 97, nextEnd.charAt(1) - 48))
-                        boot2 = "-";
-                } else if (nextID == 2 && !boot3.equals("-")) {
-                    if (placeDots(nextStart.charAt(0) - 97, nextStart.charAt(1) - 48, nextEnd.charAt(0) - 97, nextEnd.charAt(1) - 48))
-                        boot3 = "-";
-                } else if (nextID == 2 && !boot4.equals("-")) {
-                    if (placeDots(nextStart.charAt(0) - 97, nextStart.charAt(1) - 48, nextEnd.charAt(0) - 97, nextEnd.charAt(1) - 48))
-                        boot4 = "-";
+            inputStart   = scan.next();
+            inputEnd     = scan.next();
+            if (validateInput(inputStart) && validateInput(inputEnd)) {
+                id = Math.abs(((int) inputStart.charAt(0) - (int) inputEnd.charAt(0)) - ((int) inputStart.charAt(1) - (int) inputEnd.charAt(1)));
+                if (id == 4 && !boot1.equals(Printer.dismiss)) {
+                    if (placeDots(inputStart.charAt(0) - 97, inputStart.charAt(1) - 48, inputEnd.charAt(0) - 97, inputEnd.charAt(1) - 48))
+                        boot1 = Printer.dismiss;
+                } else if (id == 3 && !boot2.equals(Printer.dismiss)) {
+                    if (placeDots(inputStart.charAt(0) - 97, inputStart.charAt(1) - 48, inputEnd.charAt(0) - 97, inputEnd.charAt(1) - 48))
+                        boot2 = Printer.dismiss;
+                } else if (id == 2 && !boot3.equals(Printer.dismiss)) {
+                    if (placeDots(inputStart.charAt(0) - 97, inputStart.charAt(1) - 48, inputEnd.charAt(0) - 97, inputEnd.charAt(1) - 48))
+                        boot3 = Printer.dismiss;
+                } else if (id == 2 && !boot4.equals(Printer.dismiss)) {
+                    if (placeDots(inputStart.charAt(0) - 97, inputStart.charAt(1) - 48, inputEnd.charAt(0) - 97, inputEnd.charAt(1) - 48))
+                        boot4 = Printer.dismiss;
                 } else {
-                    System.out.println("Dieses Boot ist nicht mehr verfügbar. Bitte geben Sie es erneut ein");
+                    System.out.println(printer.notValidMess);
                     placePieces(boot1, boot2, boot3, boot4);
-                    break;
-                }
+                    break;}
             } else {
-                System.out.println("Keine gültige Eingabe, bitte geben Sie es erneut ein");
+                System.out.println(printer.notValidRetryMess);
                 placePieces(boot1, boot2, boot3, boot4);
-                break;
-            }
-            System.out.println("Noch übrig:\n 1.) " + boot1 + "\n 2.) " + boot2 + "\n 3.) " + boot3 + "\n 4.) " + boot4 + "\n");
-        }
+                break;}
+            if (!boot1.equals(boot2) || !boot1.equals(boot3) || !boot1.equals(boot4)) {
+            System.out.println(printer.stillOpenMess + "\n 1.) " + boot1 + "\n 2.) " + boot2 + "\n 3.) " + boot3 + "\n 4.) " + boot4 + "\n");
+            System.out.println(printer.placeNext);}}
     }
-
-    private boolean placeDots(int start0, int start1, int end0, int end1) {
+    private boolean placeDots(int start0, int start1, int end0, int end1)               {
         int runV1 = start1;
         int runV2 = end1;
         int runH1 = start0;
         int runH2 = end0;
-
         if (start0 > end0) {
             runH1 = end0;
             runH2 = start0;
@@ -147,129 +135,222 @@ public class GameEngine extends Thread{
             runV2 = start1;}
         int cpyV1 = runV1;
         int cpyH1 = runH1;
-
         for (; runH1 <= runH2; runH1++) {
             for (; runV1 <= runV2; runV1++)
-                if (mapMe[runH1][runV1] != ' ') {
-                    System.out.println("Die Schiffe dürfen nicht gestapelt werden!");
+                if (mapMe[runH1][runV1] != Printer.empty) {
+                    System.out.println(printer.notValidMess);
                     return false;}
-            runV1 = cpyV1; }
+            runV1 = cpyV1;}
         runH1 = cpyH1;
         for (; runH1 <= runH2; runH1++) {
             for (; runV1 <= runV2; runV1++)
                 mapMe[runH1][runV1] = indexB;
             runV1 = cpyV1;}
         indexB++;
-        System.out.println("Das Schiff wurde aufgestellt!");
-        printMap();
+        System.out.println(printer.shipPlacedMess);
+        printer.printMap();
         return true;
     }
 
-    private boolean checkDestroyed(int x, int y) {
+    //Attacking
+    private void    powerUpInput(String in)     {
+        String input;
+        for (int x = in.charAt(0) - 97, y = in.charAt(1) - 48; in.length() > 3; in = in.substring(3), x = in.charAt(0) - 97, y = in.charAt(1) - 48) {
+            input = network.receiveSignal();
+            if (x >= 0 && y >= 0 && x <= 9 && y <= 9) {
+                if (input.equals(Printer.missSignal))
+                    mapEnemy[x][y] = Printer.miss;
+                else
+                    mapEnemy[x][y] = Printer.hit;}}
+    }
+    private char    powerUpRand(char input)     {
+        int num = ((int)(Math.random() * 10)) % 3;
+        if (((int)(Math.random() * 10)) % 2 == 0) {
+            return (char) ((input - num));
+        } else {
+            return (char) ((input + num));}
+    }
+    private boolean powerUp1()                  {
+        System.out.println(printer.powerUp1Mess);
+        String input = scan.next();
+        String output = "";
+        try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
+        if (input.charAt(0) < 97 || input.charAt(0) > 106) {
+            for (int counter = 0; counter < 11; counter++)
+                output = output + (char) (counter + 97) + input.charAt(0) + Printer.empty;
+        } else if (input.charAt(0) < 48 || input.charAt(0) > 57) {
+            for (int counter = 0; counter < 11; counter++)
+                output = output + input.charAt(0) + (char) (counter + 48) + Printer.empty;
+        } else {
+            System.out.println(printer.notValidMess);
+            return false;}
+        network.sendSignal(Printer.pU1);
+        network.sendSignal(output);
+        powerUpInput(output);
+        pU1 = false;
+        try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
+        printer.printMap();
+        return true;
+    }
+    private boolean powerUp2()                  {
+        System.out.println(printer.powerUp2Mess);
+        String input = scan.next();
+        try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
+        String output = input + Printer.empty;
+        String strive = "";
+        if (!validateInput(input)) {
+            System.out.println(printer.notValidMess);
+            return false;}
+        for (int counter = 0; counter < 11;) {
+            strive = strive + powerUpRand(input.charAt(0)) + powerUpRand(input.charAt(1));
+            if (!output.contains(strive) && !strive.equals(input)) {
+                output = output + strive + Printer.empty;
+                counter++;}
+            strive = "";}
+        network.sendSignal(Printer.pU2);
+        network.sendSignal(output);
+        powerUpInput(output);
+        pU2 = false;
+        try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
+        printer.printMap();
+        return true;
+    }
+    private boolean powerUp3()                  {
+        System.out.println(printer.powerUp3Mess);
+        String input = scan.next();
+        String output;
+        try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
+        if (!validateInput(input)) {
+            System.out.println(printer.notValidMess);
+            return false;}
+        network.sendSignal(Printer.pU3);
+        network.sendSignal(input);
+        output = network.receiveSignal();
+        if (output.equals(Printer.missSignal)) {
+            System.out.println(printer.missedMess);
+        } else {
+            System.out.println(printer.hitMess);
+            mapEnemy[output.charAt(0) - 97][output.charAt(1) - 48] = Printer.hit;}
+        try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
+        printer.printMap();
+        if (pU3 == Printer.tries2)
+            pU3 = Printer.tries1;
+        else pU3 = Printer.empty;
+        return true;
+    }
+    private boolean attackPowerUp(String input) {
+        if (input.equals("power")) {
+            printer.printPowerUp();
+            input = scan.next();
+            if (input.equals("1") && pU1)                                                       return powerUp1();
+            else if (input.equals("2") && pU2)                                                  return powerUp2();
+            else if (input.equals("3") && (pU3 == Printer.tries2 || pU3 == Printer.tries1))     return powerUp3();
+            else if (input.equals("4")) {attack();                                              return true;}}
+        return false;
+    }
+    private void    attack()                    {
+        System.out.println(printer.attackMess);
+        String input = scan.next();
+        if ((!pU1 && !pU2 && pU3 == Printer.empty || !attackPowerUp(input))) {
+            if (!validateInput(input))
+                attack();
+            else {
+                int x = input.charAt(0) - 97;
+                int y = input.charAt(1) - 48;
+
+                if (mapEnemy[x][y] == Printer.hit || mapEnemy[x][y] == Printer.miss) {
+                    System.out.println(printer.notValidMess);
+                    attack();
+                } else {
+                    network.sendSignal(input);
+                    input = network.receiveSignal();
+                    try {
+                        if (input.equals(Printer.missSignal)) {
+                            mapEnemy[x][y] = Printer.miss;
+                            System.out.println(printer.missedMess);
+                            sleep(700);
+                        } else if (input.equals(Printer.hitSignal)) {
+                            mapEnemy[x][y] = Printer.hit;
+                            System.out.println(printer.hitMess);
+                            sleep(700);
+                        } else {
+                            mapEnemy[x][y] = Printer.hit;
+                            System.out.println(printer.shipDestroyedMess);
+                            sleep(700);}
+                    } catch (InterruptedException e) {throw new RuntimeException(e);}}
+                printer.printMap();
+            }}
+    }
+
+    //Being attacked
+    private String  searchBoat(String input, int distance)  {
+        String output = Printer.missSignal;
+        for (int x = input.charAt(0) - 97 - distance; x <= input.charAt(0) - 97 + distance; x++)
+            for (int y = input.charAt(1) - 48 - distance; y <= input.charAt(1) - 48 + distance; y++) {
+                if (x >= 0 && y >= 0 && x <= 9 && y <= 9)
+                    if (mapMe[x][y] >= 1 && mapMe[x][y] <= 4) {
+                        mapMe[x][y] = Printer.hit;
+                        System.out.println(printer.hitMess);
+                        return ("" + ((char) (x + 97)) + ((char) (y + 48)));}}
+        if (distance < 2)
+            return searchBoat(input, distance + 1);
+        System.out.println(printer.missedMess);
+        return output;
+    }
+    private boolean checkDestroyed(int x, int y)            {
         for (int outer = 0; outer < 10; outer++)
             for (int inner = 0; inner < 10; inner++)
                 if ((int) mapMe[outer][inner] == (int) mapMe[x][y] && (outer != x || inner != y))
                     return true;
         return false;
     }
-    
-    public void attack() {
-        System.out.println("Jetzt darfst du angreifen! Welches Feld?");
-        String input = scan.next();
-        if (!validateInput(input))
-            attack();
-        else {
-            int x = input.charAt(0) - 97;
-            int y = input.charAt(1) - 48;
-
-            if (mapEnemy[x][y] == '⊗' || mapEnemy[x][y] == '≈') {
-                System.out.println("Bitte greife kein bereits angegriffenes Feld an!\n");
-                attack();
-            } else {
-                network.sendSignal(input);
-                input = network.receiveSignal();
-                try {
-                    if (input.equals("O")) {
-                        mapEnemy[x][y] = '≈';
-                        System.out.println("Leider daneben. Nächstes mal!\n");
-                        sleep(1000);
-                    } else if (input.equals("X")) {
-                        mapEnemy[x][y] = '⊗';
-                        System.out.println("Getroffen!\n");
-                        sleep(1000);
+    private boolean attackedPowerUp(String input)           {
+        String inputSignal;
+        if (input.equals(Printer.pU1) || input.equals(Printer.pU2)) {
+            System.out.println(printer.powerUpUsedMess);
+            inputSignal = network.receiveSignal();
+            for (int x = inputSignal.charAt(0) - 97, y = inputSignal.charAt(1) - 48; inputSignal.length() > 3; inputSignal = inputSignal.substring(3), x = inputSignal.charAt(0) - 97, y = inputSignal.charAt(1) - 48) {
+                if (x >= 0 && y >= 0 && x <= 9 && y <= 9) {
+                    if (mapMe[x][y] == Printer.empty || mapMe[x][y] == Printer.miss) {
+                        mapMe[x][y] = Printer.miss;
+                        network.sendSignal(Printer.missSignal);
                     } else {
-                        mapEnemy[x][y] = '⊗';
-                        System.out.println("Schiff zerstört!\n");
-                        sleep(1000);
-                    }
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            printMap();
-        }
+                        mapMe[x][y] = Printer.hit;
+                        network.sendSignal(Printer.hitSignal);}
+                } else network.sendSignal(Printer.dismiss);}
+            return true;
+        } else if (input.equals(Printer.pU3)) {
+            network.sendSignal(searchBoat(network.receiveSignal(), 0));
+            return true;}
+        return false;
     }
-
-    public void attacked() {
-        System.out.println("Dein gegner greift an...");
+    private void    attacked()                              {
+        Thread printDots = new Printer(this);
+        System.out.println(printer.enemyAttackMess);
+        printDots.start();
         String input = network.receiveSignal();
-        if (validateInput(input)) {
+        printDots.interrupt();
+        System.out.println();
+        if (!attackedPowerUp(input)) {
             int x = input.charAt(0) - 97;
             int y = input.charAt(1) - 48;
-
             try {
-                if (mapMe[x][y] == ' ') {
-                    mapMe[x][y] = '≈';
-                    System.out.println("Verfehlt\n");
-                    sleep(1000);
-                    network.sendSignal("O");
+                if (mapMe[x][y] == Printer.empty) {
+                    mapMe[x][y] = Printer.miss;
+                    System.out.println(printer.missedMess);
+                    network.sendSignal(Printer.missSignal);
+                    sleep(700);
                 } else {
                     if (!checkDestroyed(x, y)) {
-                        System.out.println("Dein Schiff wurde zerstört!\n");
-                        sleep(1000);
-                        network.sendSignal("XX");
+                        System.out.println(printer.shipDestroyedMess);
+                        network.sendSignal(Printer.destroyedSignal);
+                        sleep(700);
                     } else {
-                        System.out.println("Du wurdest getroffen!\n");
-                        sleep(1000);
-                        network.sendSignal("X");
-                    }
-                    mapMe[x][y] = '⊗';
-                }
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            printMap();
-        } else attacked();
-    }
-
-    private void printBoat(char field) {
-        switch (field) {
-            case '⊗': System.out.print(RED + field + RESET);    break;
-            case '≈': System.out.print(BLUE + field + RESET);   break;
-            case 1: System.out.print(YELLOW + '■' + RESET);     break;
-            case 2: System.out.print(CYAN + '■' + RESET);       break;
-            case 3: System.out.print(MAGENTA + '■' + RESET);    break;
-            case 4: System.out.print(GREEN + '■' + RESET);      break;
-            default: System.out.print(' ');
-        }
-    }
-    
-    private void printMap() {
-        System.out.println("     Dein Schlachtfeld:                                              Gegnerisches Schlachtfeld:");
-        System.out.println("     0   1   2   3   4   5   6   7   8   9                           0   1   2   3   4   5   6   7   8   9  ");
-        System.out.println("   -----------------------------------------                       ----------------------------------------- ");
-        for (int outer = 0; outer != mapMe.length; outer++) {
-            System.out.print(((char) (outer + 97)) + " |");
-            for (char inner : mapMe[outer]) {
-                System.out.print("| ");
-                printBoat(inner);
-                System.out.print(" ");}
-            System.out.print("|                    " + ((char) (outer + 97)) + " |");
-            for (char inner : mapEnemy[outer]) {
-                System.out.print("| ");
-                printBoat(inner);
-                System.out.print(" ");}
-            System.out.println("|\n   -----------------------------------------                       ----------------------------------------- ");
-        }
+                        System.out.println(printer.hitMess);
+                        network.sendSignal(Printer.hitSignal);}
+                        sleep(700);
+                    mapMe[x][y] = Printer.hit;}
+            } catch (InterruptedException e) {throw new RuntimeException(e);}}
+        printer.printMap();
     }
 }
