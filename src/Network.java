@@ -4,9 +4,9 @@ import java.io.*;
 
 public class Network {
     public int              role;
+    private final Printer   printer;
     private ServerSocket    serverSocket;
     private Socket          clientSocket;
-    private final Printer   printer;
     private PrintWriter     out;
     private BufferedReader  in;
     private String          ip;
@@ -15,7 +15,7 @@ public class Network {
     public          Network(Printer printer)                {
         Scanner scan = new Scanner(System.in);
         this.printer = printer;
-        System.out.println(printer.hostOrClientMess);
+        System.out.print(printer.hostOrClientMess);
         if (scan.next().equals("H")) {
             role = 1;
             System.out.println(printer.waitClientMess);

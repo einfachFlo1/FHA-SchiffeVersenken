@@ -2,6 +2,8 @@ import java.util.Scanner;
 
 public class Printer extends Thread{
     private final GameEngine    engine;
+
+    //Colors
     private static final String RESET       = "\u001B[0m";
     private static final String RED         = "\u001B[31m";
     private static final String GREEN       = "\u001B[32m";
@@ -10,6 +12,7 @@ public class Printer extends Thread{
     private static final String MAGENTA     = "\u001B[35m";
     private static final String CYAN        = "\u001B[36m";
 
+    //Constants
     static final char hit                   = '⊗';
     static final char miss                  = '≈';
     static final char empty                 = ' ';
@@ -25,38 +28,39 @@ public class Printer extends Thread{
     static final String pU2                 = "pU2";
     static final String pU3                 = "pU3";
 
-    String hostOrClientMess     = "Host(H) oder Client(beliebige Eingabe)?";
-    String waitClientMess       = "Warte auf Client...";
-    String enterIPMess          = "Bitte gib die IP ein...";
-    String connectingMess       = "Verbinde...";
+    //Print strings
+    String attackMess           = "Jetzt darfst du angreifen! Wähle ein Feld oder schreibe \"power\", um ein Powerup zu nutzen.";
+    String backToAttackMess     = "\n(4) zurück zum normalen Angriff.";
+    String battlefieldTitleMess = "\n     Dein Schlachtfeld:                                              Gegnerisches Schlachtfeld:";
     String connectedMess        = "Verbunden!";
-    String errorMess            = "Fehler";
+    String connectingMess       = "Verbinde...";
+    String enemyAttackMess      = "Dein Gegner greift an.";
+    String enterIPMess          = "Bitte gib die IP ein...";
+    String errorMess            = "Fehler.";
     String gameBeginMess1       = "\nLasst die Schlacht beginnen! \nHier einmal das Schlachtfeld!";
     String gameBeginMess2       = "Bitte Platziere nun deine Schiffe. Zur Auswahl stehen:\n 1.) ■ | ■ | ■ | ■ | ■\n 2.) ■ | ■ | ■ | ■\n 3.) ■ | ■ | ■\n 4.) ■ | ■ | ■";
     String gameBeginMess3       = "\nDie Schiffe kannst du platzieren, indem du den Start- und Endpunkt angibst.";
     String gameBeginMess4       = "Der Kampf beginnt!";
+    String hitMess              = "Getroffen!";
+    String hostOrClientMess     = "Host(H) oder Client(beliebige Eingabe): ";
     String loseMess             = "Du hast verloren...";
-    String winMess              = "Du hast gewonnen!";
-    String notValidRetryMess    = "Keine gültige Eingabe, bitte geben Sie es erneut ein";
-    String notValidMess         = "Keine valide Eingabe";
-    String shipPlacedMess       = "Das Schiff wurde aufgestellt!";
-    String powerUp1Mess         = "Gib eine Reihe oder Spalte an, die bombardiert werden soll";
-    String powerUp2Mess         = "Gib die Position an, wo der die Bombe einschlagen soll";
-    String powerUp3Mess         = "Gib die Position an, an der die Rakete suchen soll";
-    String attackMess           = "Jetzt darfst du angreifen! Wähle ein Feld oder schreibe \"power\", um ein Powerup zu nutzen.";
-    String enemyAttackMess      = "Dein Gegner greift an";
-    String hitMess              = "Getroffen";
-    String missedMess           = "Verfehlt";
-    String shipDestroyedMess    = "Ein Schiff wurde zerstört!";
-    String powerUpUsedMess      = "Powerup wurde genutzt";
-    String stillOpenMess        = "Noch übrig:";
+    String missedMess           = "Verfehlt!";
+    String notValidMess         = "Keine valide Eingabe.";
+    String notValidRetryMess    = "Keine gültige Eingabe, bitte geben Sie es erneut ein.";
+    String placeNext            = "Platziere dein nächstes Schiff!";
+    String powerUp1ExplMess     = "Bombardiere eine Reihe/Zeile!";
+    String powerUp2ExplMess     = "Wirft eine Splitterbombe, welche zufällige Felder in einem Umkreis von 2 trifft.";
+    String powerUp3ExplMess     = "Starte eine Suchrakete, welche Boote in der Nähe findet.";
+    String powerUp1Mess         = "Gib eine Reihe oder Spalte an, die bombardiert werden soll!";
+    String powerUp2Mess         = "Gib die Position an, wo der die Bombe einschlagen soll!";
+    String powerUp3Mess         = "Gib die Position an, an der die Rakete suchen soll!";
     String powerUpActiveMess    = "Powerup aktiv, wähle eines und gib den Index ein:";
-    String powerUp1ExplMess     = "Bombardiere eine Reihe/Zeile";
-    String powerUp2ExplMess     = "Wirf eine Splitterbombe, welche zufällige Felder in einem Umkreis von 2 trifft";
-    String powerUp3ExplMess     = "Starte eine Suchrakete, welche Boote in der Nähe findet";
-    String backToAttackMess     = "\n(4) zurück zum normalen Angriff";
-    String battlefieldTitleMess = "\n     Dein Schlachtfeld:                                              Gegnerisches Schlachtfeld:";
-    String placeNext            = "Platziere dein nächstes Schiff";
+    String powerUpUsedMess      = "Powerup wurde genutzt.";
+    String shipDestroyedMess    = "Ein Schiff wurde zerstört!";
+    String shipPlacedMess       = "Das Schiff wurde aufgestellt!";
+    String stillOpenMess        = "Noch übrig:";
+    String waitClientMess       = "Warte auf Client...";
+    String winMess              = "Du hast gewonnen!";
 
     public Printer(GameEngine engine) {
         this.engine = engine;
@@ -65,40 +69,40 @@ public class Printer extends Thread{
     //Output map
     public void     setLanguage()                           {
         Scanner scan = new Scanner(System.in);
-        System.out.println("Which language? (D/E)");
+        System.out.print("Which language? (D/E): ");
         if ("E".equals(scan.next())) {
-            hostOrClientMess        = "Host(H) or client(any input)?";
-            waitClientMess          = "Waiting for client...";
-            enterIPMess             = "Please enter the IP...";
-            connectingMess          = "Connecting...";
+            attackMess              = "Its time to attack! Chose a field or write \"power\", to use a powerup.";
+            backToAttackMess        = "\n(4) Back to normal attacking.";
+            battlefieldTitleMess    = "\n     Your battlefield:                                               Enemy battlefield:";
             connectedMess           = "Connected!";
-            errorMess               = "Error";
+            connectingMess          = "Connecting...";
+            enemyAttackMess         = "Your enemy attacks now.";
+            enterIPMess             = "Please enter the IP...";
+            errorMess               = "Error.";
             gameBeginMess1          = "\nLet the battle begin! \nLet's have a look at the battlefield!";
             gameBeginMess2          = "Its time, to place your ships. You can chose from:\n 1.) ■ | ■ | ■ | ■ | ■\n 2.) ■ | ■ | ■ | ■\n 3.) ■ | ■ | ■\n 4.) ■ | ■ | ■";
             gameBeginMess3          = "\nYou can place the ships by entering the start- and endposition.";
             gameBeginMess4          = "The battle begins!";
+            hitMess                 = "Hit!";
+            hostOrClientMess        = "Host(H) or client(any input): ";
             loseMess                = "You lost...";
-            winMess                 = "You won!";
-            notValidRetryMess       = "No valid input, please try again";
-            notValidMess            = "No valid input";
-            shipPlacedMess          = "The ship has been placed!";
-            powerUp1Mess            = "Enter a row or column to bomb";
-            powerUp2Mess            = "Enter the position, where you want to place the bomb";
-            powerUp3Mess            = "Enter the position for the searching rocket";
-            attackMess              = "Its time to attack! Chose a field or write \"power\", to use a powerup.";
-            enemyAttackMess         = "Your enemy attacks now";
-            hitMess                 = "Hit";
-            missedMess              = "Missed";
-            shipDestroyedMess       = "A ship has been destroyed!";
-            powerUpUsedMess         = "Powerup was used";
-            stillOpenMess           = "Still open:";
+            missedMess              = "Missed!";
+            notValidMess            = "No valid input.";
+            notValidRetryMess       = "No valid input, please try again.";
+            placeNext               = "Place your next ship!";
+            powerUp1ExplMess        = "Bomb a row/column!";
+            powerUp2ExplMess        = "Places a fragmentation bomb, which hits random fields in a radius of 2.";
+            powerUp3ExplMess        = "Places a searching rocket, which finds ships close to it.";
+            powerUp1Mess            = "Enter a row or column to bomb!";
+            powerUp2Mess            = "Enter the position, where you want to place the bomb!";
+            powerUp3Mess            = "Enter the position for the searching rocket!";
+            powerUpUsedMess         = "Powerup was used.";
             powerUpActiveMess       = "Powerup active, chose one by entering it's index:";
-            powerUp1ExplMess        = "Bomb a row/column";
-            powerUp2ExplMess        = "Place a fragmentation bomb, which hits random fields in a radius of 2";
-            powerUp3ExplMess        = "Place a searching roket, which finds ships close to it";
-            backToAttackMess        = "\n(4) Back to normal attacking";
-            battlefieldTitleMess    = "\n     Your battlefield:                                               Enemy battlefield:";
-            placeNext               = "Place your next ship";
+            shipDestroyedMess       = "A ship has been destroyed!";
+            shipPlacedMess          = "The ship has been placed!";
+            stillOpenMess           = "Still open:";
+            waitClientMess          = "Waiting for client...";
+            winMess                 = "You won!";
         }
     }
     public void     run()                                   {

@@ -12,7 +12,7 @@ public class GameEngine extends Thread{
     private boolean         pU2;
     private char            pU3;
 
-    public GameEngine() {
+    public          GameEngine()                                                        {
         this.mapMe      = new char[10][10];
         this.mapEnemy   = new char[10][10];
         this.printer    = new Printer(this);
@@ -32,15 +32,8 @@ public class GameEngine extends Thread{
         } catch (IOException | InterruptedException e) {throw new RuntimeException(e);}
     }
 
-    //Getter
-    public char[][] getMapMe()      {return mapMe;}
-    public char[][] getMapEnemy()   {return mapEnemy;}
-    public boolean  getPU1()        {return pU1;}
-    public boolean  getPU2()        {return pU2;}
-    public char     getPU3()        {return pU3;}
-
     //Game loop
-    public void     gameBegin()             {
+    public void     gameBegin()                                                         {
         System.out.println(printer.gameBeginMess1);
         printer.printMap();
         try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
@@ -66,7 +59,7 @@ public class GameEngine extends Thread{
             if (gameOver(1)) break;}
         try { network.closeConnection(); } catch (IOException e) {throw new RuntimeException(e);}
     }
-    private boolean gameOver(int qualifier) {
+    private boolean gameOver(int qualifier)                                             {
         if (qualifier == 1) {                                                                                           //Checks, if i lost
             for (char[] outer : mapMe)
                 for (char inner : outer)
@@ -84,7 +77,7 @@ public class GameEngine extends Thread{
     }
 
     //Helper method
-    private boolean validateInput(String input) {                                                                       //Checks, if input is valid or not
+    private boolean validateInput(String input)                                         {                                                                       //Checks, if input is valid or not
         return (input.length() == 2 && input.charAt(0) >= 97 && input.charAt(0) <= 106 && input.charAt(1) >= 48 && input.charAt(1) <= 57);
     }
 
@@ -153,7 +146,7 @@ public class GameEngine extends Thread{
     }
 
     //Attacking
-    private void    powerUpEvaluate(String hitList) {
+    private void    powerUpEvaluate(String hitList)                                     {
         String input;                                                                                                   //evaluates output list while receiving hit/miss signals from defender
         for (int x = hitList.charAt(0) - 97, y = hitList.charAt(1) - 48; hitList.length() > 3; hitList = hitList.substring(3), x = hitList.charAt(0) - 97, y = hitList.charAt(1) - 48) {
             input = network.receiveSignal();
@@ -163,7 +156,7 @@ public class GameEngine extends Thread{
                 else
                     mapEnemy[x][y] = Printer.hit;}}
     }
-    private boolean powerUp1()                      {
+    private boolean powerUp1()                                                          {
         System.out.println(printer.powerUp1Mess);                                                                       //makes attack list
         String input = scan.next();
         String output = "";
@@ -185,14 +178,14 @@ public class GameEngine extends Thread{
         printer.printMap();
         return true;
     }
-    private char    powerUp2Rand(char input)        {                                                                   //Gives back position 0-2 steps from input position
+    private char    powerUp2Rand(char input)                                            {                                                                   //Gives back position 0-2 steps from input position
         int num = ((int)(Math.random() * 10)) % 3;
         if (((int)(Math.random() * 10)) % 2 == 0) {
             return (char) ((input - num));
         } else {
             return (char) ((input + num));}
     }
-    private boolean powerUp2()                      {
+    private boolean powerUp2()                                                          {
         System.out.println(printer.powerUp2Mess);
         String input = scan.next();
         try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
@@ -215,7 +208,7 @@ public class GameEngine extends Thread{
         printer.printMap();
         return true;
     }
-    private boolean powerUp3()                      {
+    private boolean powerUp3()                                                          {
         System.out.println(printer.powerUp3Mess);
         String input = scan.next();
         String output;
@@ -238,7 +231,7 @@ public class GameEngine extends Thread{
         else pU3 = Printer.empty;
         return true;
     }
-    private boolean attackPowerUp(String input)     {
+    private boolean attackPowerUp(String input)                                         {
         if (input.equals("power")) {
             printer.printPowerUp();
             input = scan.next();
@@ -248,7 +241,7 @@ public class GameEngine extends Thread{
             else if (input.equals("4")) {attack();                                              return true;}}
         return false;
     }
-    private void    attack()                        {
+    private void    attack()                                                            {
         System.out.println(printer.attackMess);
         String input = scan.next();
         if ((!pU1 && !pU2 && pU3 == Printer.empty || !attackPowerUp(input))) {
@@ -283,7 +276,7 @@ public class GameEngine extends Thread{
     }
 
     //Being attacked
-    private String  powerUp3Search(String input, int distance)  {
+    private String  powerUp3Search(String input, int distance)                          {
         String output = Printer.missSignal;
         for (int x = input.charAt(0) - 97 - distance; x <= input.charAt(0) - 97 + distance; x++)
             for (int y = input.charAt(1) - 48 - distance; y <= input.charAt(1) - 48 + distance; y++) {
@@ -297,14 +290,14 @@ public class GameEngine extends Thread{
         System.out.println(printer.missedMess);
         return output;
     }
-    private boolean checkDestroyed(int x, int y)                {
+    private boolean checkDestroyed(int x, int y)                                        {
         for (int outer = 0; outer < 10; outer++)
             for (int inner = 0; inner < 10; inner++)
                 if ((int) mapMe[outer][inner] == (int) mapMe[x][y] && (outer != x || inner != y))
                     return true;
         return false;
     }
-    private boolean attackedPowerUp(String input)               {
+    private boolean attackedPowerUp(String input)                                       {
         String inputSignal;
         if (input.equals(Printer.pU1) || input.equals(Printer.pU2)) {
             System.out.println(printer.powerUpUsedMess);
@@ -324,7 +317,7 @@ public class GameEngine extends Thread{
             return true;}
         return false;
     }
-    private void    attacked()                                  {
+    private void    attacked()                                                          {
         Thread printDots = new Printer(this);
         System.out.println(printer.enemyAttackMess);
         printDots.start();
@@ -353,4 +346,11 @@ public class GameEngine extends Thread{
             } catch (InterruptedException e) {throw new RuntimeException(e);}}
         printer.printMap();
     }
+
+    //Getter
+    public char[][] getMapMe()      {return mapMe;}
+    public char[][] getMapEnemy()   {return mapEnemy;}
+    public boolean  getPU1()        {return pU1;}
+    public boolean  getPU2()        {return pU2;}
+    public char     getPU3()        {return pU3;}
 }
