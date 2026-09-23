@@ -37,9 +37,7 @@ public class GameEngine extends Thread{
         System.out.println(printer.gameBeginMess1);
         printer.printMap();
         try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
-        System.out.println(printer.gameBeginMess2);
-        System.out.println(printer.gameBeginMess3);
-        placePieces("■ | ■ | ■ | ■ | ■", "■ | ■ | ■ | ■", "■ | ■ | ■", "■ | ■ | ■");                                    //Starts placing the ships
+        chooseBoatSize();
         System.out.println(printer.gameBeginMess4);
         try { sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
         if (network.role != 1) {                                                                                        //Condition deciding, who starts
@@ -91,28 +89,57 @@ public class GameEngine extends Thread{
     }
 
     //Placing ships
+    private int     getID(String boat)                                                  {
+        String piece = Printer.pieces + "";
+        if (boat.equals(Printer.dismiss))
+            return 0;
+        return boat.length() - boat.replace(piece, "").length();
+    }
+    private String  buildBoat(int size)                                                 {
+        String boat = Printer.pieces  + " | " +  Printer.pieces;
+        for (int counter = 2; counter < size; counter++)
+            boat = boat + " | "  + Printer.pieces;
+        if (size == 0)
+            return Printer.dismiss;
+        return boat;
+    }
     private void    chooseBoatSize()                                                    {
-
+        int[] boats = new int[4];
+        System.out.println(printer.boatsToUseMess);
+        if (scan.nextLine().charAt(0) == 'S')
+            placePieces(buildBoat(5), buildBoat(4), buildBoat(3), buildBoat(3));
+        else {
+            System.out.println(printer.boatsExplMess);
+            for (int counter = 0; counter < 4; counter++)
+                for (boats[counter] = scan.nextLine().charAt(0) - 48; !(boats[counter] <= 6 && boats[counter] >= 2) && !(boats[counter] == 0); boats[counter] = scan.nextLine().charAt(0) - 48) System.out.println(printer.notValidMess);
+            if (boats[0] + boats[1] + boats[2] + boats[3] != 15) {
+                System.out.println(printer.notValidMess);
+                chooseBoatSize();
+            } else
+                placePieces(buildBoat(boats[0]), buildBoat(boats[1]), buildBoat(boats[2]), buildBoat(boats[3]));
+        }
     }
     private void    placePieces(String boat1, String boat2, String boat3, String boat4) {
         int     id;
         String  inputStart;
         String  inputEnd;
-        while (!boat1.equals(boat2) || !boat1.equals(boat3) || !boat1.equals(boat4)) {                                  //loops, while not all boats are placed
+        System.out.println(printer.gameBeginMess2 + "1.) " + boat1 + "\n2.) " + boat2 + "\n3.) " + boat3 + "\n4.) " + boat4);
+        System.out.println(printer.gameBeginMess3);
+        while (!boat1.equals(Printer.dismiss) || !boat2.equals(Printer.dismiss) || !boat3.equals(Printer.dismiss) || !boat4.equals(Printer.dismiss)) {                                  //loops, while not all boats are placed
             inputStart   = scan.next();
             inputEnd     = scan.next();
             if (validateInput(inputStart) && validateInput(inputEnd)) {                                                 //Checks distance between start and end, to identify the boat
-                id = Math.abs((transformSign(inputStart.charAt(0)) - transformSign(inputEnd.charAt(0))) - (transformSign(inputStart.charAt(1)) - transformSign(inputEnd.charAt(1))));
-                if (id == 4 && !boat1.equals(Printer.dismiss)) {
+                id = 1 + Math.abs((transformSign(inputStart.charAt(0)) - transformSign(inputEnd.charAt(0))) - (transformSign(inputStart.charAt(1)) - transformSign(inputEnd.charAt(1))));
+                if (id == getID(boat1) && !boat1.equals(Printer.dismiss)) {
                     if (placeDots(transformSign(inputStart.charAt(0)), transformSign(inputStart.charAt(1)), transformSign(inputEnd.charAt(0)), transformSign(inputEnd.charAt(1))))
                         boat1 = Printer.dismiss;
-                } else if (id == 3 && !boat2.equals(Printer.dismiss)) {
+                } else if (id == getID(boat2) && !boat2.equals(Printer.dismiss)) {
                     if (placeDots(transformSign(inputStart.charAt(0)), transformSign(inputStart.charAt(1)), transformSign(inputEnd.charAt(0)), transformSign(inputEnd.charAt(1))))
                         boat2 = Printer.dismiss;
-                } else if (id == 2 && !boat3.equals(Printer.dismiss)) {
+                } else if (id == getID(boat3) && !boat3.equals(Printer.dismiss)) {
                     if (placeDots(transformSign(inputStart.charAt(0)), transformSign(inputStart.charAt(1)), transformSign(inputEnd.charAt(0)), transformSign(inputEnd.charAt(1))))
                         boat3 = Printer.dismiss;
-                } else if (id == 2 && !boat4.equals(Printer.dismiss)) {
+                } else if (id == getID(boat4) && !boat4.equals(Printer.dismiss)) {
                     if (placeDots(transformSign(inputStart.charAt(0)), transformSign(inputStart.charAt(1)), transformSign(inputEnd.charAt(0)), transformSign(inputEnd.charAt(1))))
                         boat4 = Printer.dismiss;
                 } else {
@@ -127,7 +154,7 @@ public class GameEngine extends Thread{
             System.out.println(printer.stillOpenMess + "\n 1.) " + boat1 + "\n 2.) " + boat2 + "\n 3.) " + boat3 + "\n 4.) " + boat4 + "\n");
             System.out.println(printer.placeNext);}}
     }
-    private boolean placeDots(int start0, int start1, int end0, int end1) {
+    private boolean placeDots(int start0, int start1, int end0, int end1)               {
         System.out.println(" s0:" + start0 + " s1:" + start1 + " e0:" + end0 + " e1:" + end1);
         int runV1 = start1;
         int runV2 = end1;

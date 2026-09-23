@@ -22,7 +22,7 @@ public class Network {
             System.out.println(printer.waitClientMess);
         } else {
             role = 0;
-            System.out.println(printer.enterIPMess);
+            System.out.print(printer.enterIPMess);
             ip = scan.next();}
     }
     public void     buildConnection() throws IOException    {
@@ -60,7 +60,7 @@ public class Network {
             throw new RuntimeException(e);
         }
     }
-    public void     sendSignal(String input)                {
+    public void     sendSignal(String input)                        {
         out.println(input);
     }
     public String   receiveSignal()                         {

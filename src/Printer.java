@@ -18,7 +18,6 @@ public class Printer extends Thread{
     static final char pieces                = '■';
 
     //Constants
-    static final char standard              = 'S';
     static final char empty                 = ' ';
     static final char tries2                = '2';
     static final char tries1                = '1';
@@ -36,15 +35,17 @@ public class Printer extends Thread{
     String attackMess           = "Jetzt darfst du angreifen! ";
     String backToAttackMess     = "\n(4) zurück zum normalen Angriff.";
     String battlefieldTitleMess = "\n     Dein Schlachtfeld:                                              Gegnerisches Schlachtfeld:";
+    String boatsExplMess        = "Bitte geben Sie die Länge der Boote ein.\nSie müssen 4 Boote eingeben. Diese können zwischen 2 und 6 Felder lang sein. Bei 0 fällt eines weg.\nInsgesamt müssen diese eine Länge von 15 ergeben.";
+    String boatsToUseMess       = "Wollen Sie die standard-Boote nutzen (S) oder selbst die Boote festlegen (beliebige Eingabe)?";
     String connectedMess        = "Verbunden!";
     String connectingMess       = "Verbinde...";
     String displayIP            = "Ihre IP: ";
     String displayIPMess        = "Geben Sie sie weiter, damit sich Clients verbinden können.";
     String enemyAttackMess      = "Dein Gegner greift an.";
-    String enterIPMess          = "Bitte gib die IP ein...";
+    String enterIPMess          = "Bitte gib die IP ein: ";
     String errorMess            = "Fehler.";
     String gameBeginMess1       = "\nLasst die Schlacht beginnen! \nHier einmal das Schlachtfeld!";
-    String gameBeginMess2       = "Bitte Platziere nun deine Schiffe. Zur Auswahl stehen:\n 1.) " + pieces + " | " + pieces + " | " + pieces + " | " + pieces + " | " + pieces + "\n 2.) " + pieces + " | " + pieces + " | " + pieces + " | " + pieces + "\n 3.) " + pieces + " | " + pieces + " | " + pieces + "\n 4.) " + pieces + " | " + pieces + " | " + pieces;
+    String gameBeginMess2       = "Bitte Platziere nun deine Schiffe. Zur Auswahl stehen:\n";
     String gameBeginMess3       = "\nDie Schiffe kannst du platzieren, indem du den Start- und Endpunkt angibst.";
     String gameBeginMess4       = "Der Kampf beginnt!";
     String hitMess              = "Getroffen!";
@@ -81,6 +82,8 @@ public class Printer extends Thread{
             attackMess              = "Its time to attack! ";
             backToAttackMess        = "\n(4) Back to normal attacking.";
             battlefieldTitleMess    = "\n     Your battlefield:                                               Enemy battlefield:";
+            boatsExplMess           = "Please enter the lengths of your boats.\nYou have to enter 4 boats. These can vary between 2 to 6 fields. By using 0 you delete one boat.\nOverall your boats have to be equivalent to 15 fieds.";
+            boatsToUseMess          = "Use standard boats(S) or decide yourself? (any input)?";
             connectedMess           = "Connected!";
             connectingMess          = "Connecting...";
             displayIP               = "Your IP: ";
@@ -89,7 +92,7 @@ public class Printer extends Thread{
             enterIPMess             = "Please enter the IP...";
             errorMess               = "Error.";
             gameBeginMess1          = "\nLet the battle begin! \nLet's have a look at the battlefield!";
-            gameBeginMess2          = "Its time, to place your ships. You can chose from:\n 1.) " + pieces + " | " + pieces + " | " + pieces + " | " + pieces + " | " + pieces + "\n 2.) " + pieces + " | " + pieces + " | " + pieces + " | " + pieces + "\n 3.) " + pieces + " | " + pieces + " | " + pieces + "\n 4.) " + pieces + " | " + pieces + " | " + pieces;
+            gameBeginMess2          = "Its time, to place your ships. You can chose from:\n";
             gameBeginMess3          = "\nYou can place the ships by entering the start- and endposition.";
             gameBeginMess4          = "The battle begins!";
             hitMess                 = "Hit!";
@@ -159,15 +162,14 @@ public class Printer extends Thread{
                 System.out.print(" ");}
             if (outer < engine.getMapMe().length - 1) System.out.println("║\n╞══╪╬═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╣                   ╞══╪╬═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╣ ");
             else System.out.println("║\n   ╰╚═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╝                      ╰╚═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╝ ");}}
-
     private void    printBoat(char field)                   {
         switch (field) {
-            case hit: System.out.print(RED + field + RESET);    break;
-            case miss: System.out.print(BLUE + field + RESET);  break;
-            case 1: System.out.print(YELLOW + pieces + RESET);     break;
-            case 2: System.out.print(CYAN + pieces + RESET);       break;
-            case 3: System.out.print(MAGENTA + pieces + RESET);    break;
-            case 4: System.out.print(GREEN + pieces + RESET);      break;
+            case hit: System.out.print(RED + field + RESET);        break;
+            case miss: System.out.print(BLUE + field + RESET);      break;
+            case 1: System.out.print(YELLOW + pieces + RESET);      break;
+            case 2: System.out.print(CYAN + pieces + RESET);        break;
+            case 3: System.out.print(MAGENTA + pieces + RESET);     break;
+            case 4: System.out.print(GREEN + pieces + RESET);       break;
             default: System.out.print(empty);}
     }
 }
