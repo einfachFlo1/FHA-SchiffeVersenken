@@ -18,11 +18,20 @@ public class Network {
         System.out.print(printer.hostOrClientMess);
         if (scan.next().equals("H")) {
             role = 1;
+            getIP();
             System.out.println(printer.waitClientMess);
         } else {
             role = 0;
             System.out.println(printer.enterIPMess);
             ip = scan.next();}
+    }
+    public void     getIP()                                 {
+        try {
+            InetAddress address = InetAddress.getLocalHost();
+            printer.printIP(address.getHostAddress());
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
     }
     public void     buildConnection() throws IOException    {
         if (role == 1) {
@@ -51,7 +60,7 @@ public class Network {
         if (role == 1)
             serverSocket.close();
     }
-    public void     sendSignal(String input)                    {
+    public void     sendSignal(String input)                {
         out.println(input);
     }
     public String   receiveSignal()                         {

@@ -15,6 +15,7 @@ public class Printer extends Thread{
     //Constants
     static final char hit                   = '⊗';
     static final char miss                  = '≈';
+    static final char pieces                = '■';
     static final char empty                 = ' ';
     static final char tries2                = '2';
     static final char tries1                = '1';
@@ -34,11 +35,13 @@ public class Printer extends Thread{
     String battlefieldTitleMess = "\n     Dein Schlachtfeld:                                              Gegnerisches Schlachtfeld:";
     String connectedMess        = "Verbunden!";
     String connectingMess       = "Verbinde...";
+    String displayIP            = "Ihre IP: ";
+    String displayIPMess        = "Geben Sie sie weiter, damit sich Clients verbinden können.";
     String enemyAttackMess      = "Dein Gegner greift an.";
     String enterIPMess          = "Bitte gib die IP ein...";
     String errorMess            = "Fehler.";
     String gameBeginMess1       = "\nLasst die Schlacht beginnen! \nHier einmal das Schlachtfeld!";
-    String gameBeginMess2       = "Bitte Platziere nun deine Schiffe. Zur Auswahl stehen:\n 1.) ■ | ■ | ■ | ■ | ■\n 2.) ■ | ■ | ■ | ■\n 3.) ■ | ■ | ■\n 4.) ■ | ■ | ■";
+    String gameBeginMess2       = "Bitte Platziere nun deine Schiffe. Zur Auswahl stehen:\n 1.) " + pieces + " | " + pieces + " | " + pieces + " | " + pieces + " | " + pieces + "\n 2.) " + pieces + " | " + pieces + " | " + pieces + " | " + pieces + "\n 3.) " + pieces + " | " + pieces + " | " + pieces + "\n 4.) " + pieces + " | " + pieces + " | " + pieces;
     String gameBeginMess3       = "\nDie Schiffe kannst du platzieren, indem du den Start- und Endpunkt angibst.";
     String gameBeginMess4       = "Der Kampf beginnt!";
     String hitMess              = "Getroffen!";
@@ -76,11 +79,13 @@ public class Printer extends Thread{
             battlefieldTitleMess    = "\n     Your battlefield:                                               Enemy battlefield:";
             connectedMess           = "Connected!";
             connectingMess          = "Connecting...";
+            displayIP               = "Your IP: ";
+            displayIPMess           = "Share your IP, so clients can connect.";
             enemyAttackMess         = "Your enemy attacks now.";
             enterIPMess             = "Please enter the IP...";
             errorMess               = "Error.";
             gameBeginMess1          = "\nLet the battle begin! \nLet's have a look at the battlefield!";
-            gameBeginMess2          = "Its time, to place your ships. You can chose from:\n 1.) ■ | ■ | ■ | ■ | ■\n 2.) ■ | ■ | ■ | ■\n 3.) ■ | ■ | ■\n 4.) ■ | ■ | ■";
+            gameBeginMess2          = "Its time, to place your ships. You can chose from:\n 1.) " + pieces + " | " + pieces + " | " + pieces + " | " + pieces + " | " + pieces + "\n 2.) " + pieces + " | " + pieces + " | " + pieces + " | " + pieces + "\n 3.) " + pieces + " | " + pieces + " | " + pieces + "\n 4.) " + pieces + " | " + pieces + " | " + pieces;
             gameBeginMess3          = "\nYou can place the ships by entering the start- and endposition.";
             gameBeginMess4          = "The battle begins!";
             hitMess                 = "Hit!";
@@ -104,6 +109,9 @@ public class Printer extends Thread{
             waitClientMess          = "Waiting for client...";
             winMess                 = "You won!";
         }
+    }
+    public void     printIP(String address)                 {
+        System.out.println(displayIP + GREEN + address + RESET + "\n" + displayIPMess);
     }
     public void     run()                                   {
         try {
@@ -147,12 +155,12 @@ public class Printer extends Thread{
             System.out.println("|\n   -----------------------------------------                       ----------------------------------------- ");}}
     private void    printBoat(char field)                   {
         switch (field) {
-            case '⊗': System.out.print(RED + field + RESET);    break;
-            case '≈': System.out.print(BLUE + field + RESET);   break;
-            case 1: System.out.print(YELLOW + '■' + RESET);     break;
-            case 2: System.out.print(CYAN + '■' + RESET);       break;
-            case 3: System.out.print(MAGENTA + '■' + RESET);    break;
-            case 4: System.out.print(GREEN + '■' + RESET);      break;
-            default: System.out.print(Printer.empty);}
+            case hit: System.out.print(RED + field + RESET);    break;
+            case miss: System.out.print(BLUE + field + RESET);  break;
+            case 1: System.out.print(YELLOW + pieces + RESET);     break;
+            case 2: System.out.print(CYAN + pieces + RESET);       break;
+            case 3: System.out.print(MAGENTA + pieces + RESET);    break;
+            case 4: System.out.print(GREEN + pieces + RESET);      break;
+            default: System.out.print(empty);}
     }
 }
