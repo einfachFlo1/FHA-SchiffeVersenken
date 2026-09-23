@@ -78,10 +78,22 @@ public class GameEngine extends Thread{
 
     //Helper method
     private boolean validateInput(String input)                                         {                                                                       //Checks, if input is valid or not
-        return (input.length() == 2 && input.charAt(0) >= 97 && input.charAt(0) <= 106 && input.charAt(1) >= 48 && input.charAt(1) <= 57);
+        return (input.length() == 2 && ((input.charAt(0) >= 97 && input.charAt(0) <= 106) || (input.charAt(0) >= 65 && input.charAt(0) <= 74)) && input.charAt(1) >= 48 && input.charAt(1) <= 57);
+    }
+    private int     transformSign(char sign)                                            {
+        if (sign >= 48 && sign <= 57)
+            return (sign - 48);
+        else if (sign >= 97 && sign <= 106)
+            return (sign - 97);
+        else if (sign >= 65 && sign <= 74)
+            return (sign - 65);
+        return 0;
     }
 
     //Placing ships
+    private void    chooseBoatSize()                                                    {
+
+    }
     private void    placePieces(String boat1, String boat2, String boat3, String boat4) {
         int     id;
         String  inputStart;
@@ -90,18 +102,18 @@ public class GameEngine extends Thread{
             inputStart   = scan.next();
             inputEnd     = scan.next();
             if (validateInput(inputStart) && validateInput(inputEnd)) {                                                 //Checks distance between start and end, to identify the boat
-                id = Math.abs(((int) inputStart.charAt(0) - (int) inputEnd.charAt(0)) - ((int) inputStart.charAt(1) - (int) inputEnd.charAt(1)));
+                id = Math.abs((transformSign(inputStart.charAt(0)) - transformSign(inputEnd.charAt(0))) - (transformSign(inputStart.charAt(1)) - transformSign(inputEnd.charAt(1))));
                 if (id == 4 && !boat1.equals(Printer.dismiss)) {
-                    if (placeDots(inputStart.charAt(0) - 97, inputStart.charAt(1) - 48, inputEnd.charAt(0) - 97, inputEnd.charAt(1) - 48))
+                    if (placeDots(transformSign(inputStart.charAt(0)), transformSign(inputStart.charAt(1)), transformSign(inputEnd.charAt(0)), transformSign(inputEnd.charAt(1))))
                         boat1 = Printer.dismiss;
                 } else if (id == 3 && !boat2.equals(Printer.dismiss)) {
-                    if (placeDots(inputStart.charAt(0) - 97, inputStart.charAt(1) - 48, inputEnd.charAt(0) - 97, inputEnd.charAt(1) - 48))
+                    if (placeDots(transformSign(inputStart.charAt(0)), transformSign(inputStart.charAt(1)), transformSign(inputEnd.charAt(0)), transformSign(inputEnd.charAt(1))))
                         boat2 = Printer.dismiss;
                 } else if (id == 2 && !boat3.equals(Printer.dismiss)) {
-                    if (placeDots(inputStart.charAt(0) - 97, inputStart.charAt(1) - 48, inputEnd.charAt(0) - 97, inputEnd.charAt(1) - 48))
+                    if (placeDots(transformSign(inputStart.charAt(0)), transformSign(inputStart.charAt(1)), transformSign(inputEnd.charAt(0)), transformSign(inputEnd.charAt(1))))
                         boat3 = Printer.dismiss;
                 } else if (id == 2 && !boat4.equals(Printer.dismiss)) {
-                    if (placeDots(inputStart.charAt(0) - 97, inputStart.charAt(1) - 48, inputEnd.charAt(0) - 97, inputEnd.charAt(1) - 48))
+                    if (placeDots(transformSign(inputStart.charAt(0)), transformSign(inputStart.charAt(1)), transformSign(inputEnd.charAt(0)), transformSign(inputEnd.charAt(1))))
                         boat4 = Printer.dismiss;
                 } else {
                     System.out.println(printer.notValidMess);
@@ -115,7 +127,8 @@ public class GameEngine extends Thread{
             System.out.println(printer.stillOpenMess + "\n 1.) " + boat1 + "\n 2.) " + boat2 + "\n 3.) " + boat3 + "\n 4.) " + boat4 + "\n");
             System.out.println(printer.placeNext);}}
     }
-    private boolean placeDots(int start0, int start1, int end0, int end1)               {
+    private boolean placeDots(int start0, int start1, int end0, int end1) {
+        System.out.println(" s0:" + start0 + " s1:" + start1 + " e0:" + end0 + " e1:" + end1);
         int runV1 = start1;
         int runV2 = end1;
         int runH1 = start0;
@@ -148,7 +161,7 @@ public class GameEngine extends Thread{
     //Attacking
     private void    powerUpEvaluate(String hitList)                                     {
         String input;                                                                                                   //evaluates output list while receiving hit/miss signals from defender
-        for (int x = hitList.charAt(0) - 97, y = hitList.charAt(1) - 48; hitList.length() > 3; hitList = hitList.substring(3), x = hitList.charAt(0) - 97, y = hitList.charAt(1) - 48) {
+        for (int x = transformSign(hitList.charAt(0)), y = transformSign(hitList.charAt(1)); hitList.length() > 3; hitList = hitList.substring(3), x = transformSign(hitList.charAt(0)), y = transformSign(hitList.charAt(1))) {
             input = network.receiveSignal();
             if (x >= 0 && y >= 0 && x <= 9 && y <= 9) {
                 if (input.equals(Printer.missSignal))
@@ -223,7 +236,7 @@ public class GameEngine extends Thread{
             System.out.println(printer.missedMess);
         } else {
             System.out.println(printer.hitMess);
-            mapEnemy[output.charAt(0) - 97][output.charAt(1) - 48] = Printer.hit;}
+            mapEnemy[transformSign(output.charAt(0))][transformSign(output.charAt(1))] = Printer.hit;}
         try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
         printer.printMap();
         if (pU3 == Printer.tries2)
@@ -242,14 +255,15 @@ public class GameEngine extends Thread{
         return false;
     }
     private void    attack()                                                            {
-        System.out.println(printer.attackMess);
+        System.out.print(printer.attackMess);
+        System.out.println(printer.powerUpMess);
         String input = scan.next();
         if ((!pU1 && !pU2 && pU3 == Printer.empty || !attackPowerUp(input))) {
             if (!validateInput(input))
                 attack();
             else {
-                int x = input.charAt(0) - 97;
-                int y = input.charAt(1) - 48;
+                int x = transformSign(input.charAt(0));
+                int y = transformSign(input.charAt(1));
 
                 if (mapEnemy[x][y] == Printer.hit || mapEnemy[x][y] == Printer.miss) {
                     System.out.println(printer.notValidMess);
@@ -278,8 +292,8 @@ public class GameEngine extends Thread{
     //Being attacked
     private String  powerUp3Search(String input, int distance)                          {
         String output = Printer.missSignal;
-        for (int x = input.charAt(0) - 97 - distance; x <= input.charAt(0) - 97 + distance; x++)
-            for (int y = input.charAt(1) - 48 - distance; y <= input.charAt(1) - 48 + distance; y++) {
+        for (int x = transformSign(input.charAt(0)) - distance; x <= transformSign(input.charAt(0)) + distance; x++)
+            for (int y = transformSign(input.charAt(1)) - distance; y <= transformSign(input.charAt(1)) + distance; y++) {
                 if (x >= 0 && y >= 0 && x <= 9 && y <= 9)
                     if (mapMe[x][y] >= 1 && mapMe[x][y] <= 4) {
                         mapMe[x][y] = Printer.hit;
@@ -302,7 +316,7 @@ public class GameEngine extends Thread{
         if (input.equals(Printer.pU1) || input.equals(Printer.pU2)) {
             System.out.println(printer.powerUpUsedMess);
             inputSignal = network.receiveSignal();
-            for (int x = inputSignal.charAt(0) - 97, y = inputSignal.charAt(1) - 48; inputSignal.length() > 3; inputSignal = inputSignal.substring(3), x = inputSignal.charAt(0) - 97, y = inputSignal.charAt(1) - 48) {
+            for (int x = transformSign(inputSignal.charAt(0)), y = transformSign(inputSignal.charAt(1)); inputSignal.length() > 3; inputSignal = inputSignal.substring(3), x = transformSign(inputSignal.charAt(0)), y = transformSign(inputSignal.charAt(1))) {
                 if (x >= 0 && y >= 0 && x <= 9 && y <= 9) {
                     if (mapMe[x][y] == Printer.empty || mapMe[x][y] == Printer.miss) {
                         mapMe[x][y] = Printer.miss;
@@ -325,8 +339,8 @@ public class GameEngine extends Thread{
         printDots.interrupt();
         System.out.println();
         if (!attackedPowerUp(input)) {
-            int x = input.charAt(0) - 97;
-            int y = input.charAt(1) - 48;
+            int x = transformSign(input.charAt(0));
+            int y = transformSign(input.charAt(1));
             try {
                 if (mapMe[x][y] == Printer.empty) {
                     mapMe[x][y] = Printer.miss;
