@@ -25,6 +25,14 @@ public class Network {
             System.out.print(printer.enterIPMess);
             ip = scan.next();}
     }
+    public void     getIP()                                 {
+        try {
+            InetAddress address = InetAddress.getLocalHost();
+            printer.printIP(address.getHostAddress());
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public void     buildConnection() throws IOException    {
         if (role == 1) {
             serverSocket = new ServerSocket(6666);
@@ -52,22 +60,14 @@ public class Network {
         if (role == 1)
             serverSocket.close();
     }
-    public void     getIP()                                 {
-        try {
-            InetAddress address = InetAddress.getLocalHost();
-            printer.printIP(address.getHostAddress());
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    public void     sendSignal(String input)                        {
-        out.println(input);
-    }
     public String   receiveSignal()                         {
         try {
             return in.readLine();
         } catch (IOException e) {
             return printer.errorMess;
         }
+    }
+    public void     sendSignal(String input)                        {
+        out.println(input);
     }
 }

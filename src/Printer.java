@@ -5,12 +5,13 @@ public class Printer extends Thread{
 
     //Colors
     private static final String RESET       = "\u001B[0m";
-    private static final String RED         = "\u001B[31m";
+    private static final String BLACK       = "\u001B[30m";
     private static final String GREEN       = "\u001B[32m";
     private static final String YELLOW      = "\u001B[33m";
-    private static final String BLUE        = "\u001B[34m";
     private static final String MAGENTA     = "\u001B[35m";
     private static final String CYAN        = "\u001B[36m";
+    private static final String RED_BACK    = "\u001B[41m";
+    private static final String BLUE_BACK   = "\u001B[44m";
 
     //Game Pieces (Interchangeable)
     static final char hit                   = '⊗';
@@ -34,9 +35,9 @@ public class Printer extends Thread{
     //Print strings
     String attackMess           = "Jetzt darfst du angreifen! ";
     String backToAttackMess     = "\n(4) zurück zum normalen Angriff.";
-    String battlefieldTitleMess = "\n     Dein Schlachtfeld:                                              Gegnerisches Schlachtfeld:";
+    String battlefieldTitleMess = "\n     Dein Schlachtfeld:                                                              Gegnerisches Schlachtfeld:";
     String boatsExplMess        = "Bitte geben Sie die Länge der Boote ein.\nSie müssen 4 Boote eingeben. Diese können zwischen 2 und 6 Felder lang sein. Bei 0 fällt eines weg.\nInsgesamt müssen diese eine Länge von 15 ergeben.";
-    String boatsToUseMess       = "Wollen Sie die standard-Boote nutzen (S) oder selbst die Boote festlegen (beliebige Eingabe)?";
+    String boatsToUseMess       = "Wollen Sie die standard-Boote nutzen (S) oder selbst die Boote festlegen (beliebige Eingabe): ";
     String connectedMess        = "Verbunden!";
     String connectingMess       = "Verbinde...";
     String displayIP            = "Ihre IP: ";
@@ -46,7 +47,7 @@ public class Printer extends Thread{
     String errorMess            = "Fehler.";
     String gameBeginMess1       = "\nLasst die Schlacht beginnen! \nHier einmal das Schlachtfeld!";
     String gameBeginMess2       = "Bitte Platziere nun deine Schiffe. Zur Auswahl stehen:\n";
-    String gameBeginMess3       = "\nDie Schiffe kannst du platzieren, indem du den Start- und Endpunkt angibst.";
+    String gameBeginMess3       = "\nDie Schiffe kannst du platzieren, indem du den Start- und Endpunkt angibst: ";
     String gameBeginMess4       = "Der Kampf beginnt!";
     String hitMess              = "Getroffen!";
     String hostOrClientMess     = "Host(H) oder Client(beliebige Eingabe): ";
@@ -54,15 +55,15 @@ public class Printer extends Thread{
     String missedMess           = "Verfehlt!";
     String notValidMess         = "Keine valide Eingabe.";
     String notValidRetryMess    = "Keine gültige Eingabe, bitte geben Sie es erneut ein.";
-    String placeNext            = "Platziere dein nächstes Schiff!";
+    String placeNext            = "Platziere dein nächstes Schiff! ";
     String powerUp1ExplMess     = "Bombardiere eine Reihe/Zeile!";
     String powerUp2ExplMess     = "Wirft eine Splitterbombe, welche zufällige Felder in einem Umkreis von 2 trifft.";
     String powerUp3ExplMess     = "Starte eine Suchrakete, welche Boote in der Nähe findet.";
-    String powerUp1Mess         = "Gib eine Reihe oder Spalte an, die bombardiert werden soll!";
-    String powerUp2Mess         = "Gib die Position an, wo der die Bombe einschlagen soll!";
-    String powerUp3Mess         = "Gib die Position an, an der die Rakete suchen soll!";
+    String powerUp1Mess         = "Gib eine Reihe oder Spalte an, die bombardiert werden soll: ";
+    String powerUp2Mess         = "Gib die Position an, wo der die Bombe einschlagen soll: ";
+    String powerUp3Mess         = "Gib die Position an, an der die Rakete suchen soll: ";
     String powerUpActiveMess    = "Powerup aktiv, wähle eines und gib den Index ein:";
-    String powerUpMess          = "Wähle ein Feld oder schreibe \"power\", um ein Powerup zu nutzen.";
+    String powerUpMess          = "Wähle ein Feld oder schreibe \"power\", um ein Powerup zu nutzen: ";
     String powerUpUsedMess      = "Powerup wurde genutzt.";
     String shipDestroyedMess    = "Ein Schiff wurde zerstört!";
     String shipPlacedMess       = "Das Schiff wurde aufgestellt!";
@@ -74,26 +75,26 @@ public class Printer extends Thread{
         this.engine = engine;
     }
 
-    //Output map
-    public void     setLanguage()                           {
+    //Helper
+    public void     setLanguage()                                               {
         Scanner scan = new Scanner(System.in);
-        System.out.print("Which language? (D/E): ");
+        System.out.print("German (default) or english (E)?: ");
         if ("E".equals(scan.next())) {
             attackMess              = "Its time to attack! ";
             backToAttackMess        = "\n(4) Back to normal attacking.";
-            battlefieldTitleMess    = "\n     Your battlefield:                                               Enemy battlefield:";
+            battlefieldTitleMess    = "\n     Your battlefield:                                                               Enemy battlefield:";
             boatsExplMess           = "Please enter the lengths of your boats.\nYou have to enter 4 boats. These can vary between 2 to 6 fields. By using 0 you delete one boat.\nOverall your boats have to be equivalent to 15 fieds.";
-            boatsToUseMess          = "Use standard boats(S) or decide yourself? (any input)?";
+            boatsToUseMess          = "Use standard boats(S) or decide yourself? (any input): ";
             connectedMess           = "Connected!";
             connectingMess          = "Connecting...";
             displayIP               = "Your IP: ";
             displayIPMess           = "Share your IP, so clients can connect.";
             enemyAttackMess         = "Your enemy attacks now.";
-            enterIPMess             = "Please enter the IP...";
+            enterIPMess             = "Please enter the IP: ";
             errorMess               = "Error.";
             gameBeginMess1          = "\nLet the battle begin! \nLet's have a look at the battlefield!";
             gameBeginMess2          = "Its time, to place your ships. You can chose from:\n";
-            gameBeginMess3          = "\nYou can place the ships by entering the start- and endposition.";
+            gameBeginMess3          = "\nYou can place the ships by entering the start- and endposition: ";
             gameBeginMess4          = "The battle begins!";
             hitMess                 = "Hit!";
             hostOrClientMess        = "Host(H) or client(any input): ";
@@ -105,33 +106,23 @@ public class Printer extends Thread{
             powerUp1ExplMess        = "Bomb a row/column!";
             powerUp2ExplMess        = "Places a fragmentation bomb, which hits random fields in a radius of 2.";
             powerUp3ExplMess        = "Places a searching rocket, which finds ships close to it.";
-            powerUp1Mess            = "Enter a row or column to bomb!";
-            powerUp2Mess            = "Enter the position, where you want to place the bomb!";
-            powerUp3Mess            = "Enter the position for the searching rocket!";
-            powerUpActiveMess       = "Powerup active, chose one by entering it's index:";
-            powerUpMess             = "Chose a field or write \"power\", to use a powerup.";
+            powerUp1Mess            = "Enter a row or column to bomb: ";
+            powerUp2Mess            = "Enter the position, where you want to place the bomb: ";
+            powerUp3Mess            = "Enter the position for the searching rocket: ";
+            powerUpActiveMess       = "Powerup active, chose one by entering it's index: ";
+            powerUpMess             = "Chose a field or write \"power\", to use a powerup: ";
             powerUpUsedMess         = "Powerup was used.";
             shipDestroyedMess       = "A ship has been destroyed!";
             shipPlacedMess          = "The ship has been placed!";
-            stillOpenMess           = "Still open:";
+            stillOpenMess           = "Still open: ";
             waitClientMess          = "Waiting for client...";
             winMess                 = "You won!";
         }
     }
-    public void     printIP(String address)                 {
+    public void     printIP(String address)                                     {
         System.out.println(displayIP + GREEN + address + RESET + "\n" + displayIPMess);
     }
-    public void     run()                                   {
-        try {
-            printDots();
-        } catch (InterruptedException _) {}
-    }
-    public void     printDots() throws InterruptedException {
-        while (true) {
-            System.out.print(".");
-            sleep(700);}
-    }
-    public void     printPowerUp()                          {
+    public void     printPowerUp()                                              {
         System.out.print(powerUpActiveMess);
         System.out.print("\n(1) ");
         if (engine.getPU1()) System.out.print(powerUp1ExplMess);
@@ -145,31 +136,101 @@ public class Printer extends Thread{
         if (engine.getPU3() == tries2) System.out.print(" (x2)");
         System.out.println(backToAttackMess);
     }
-    public void     printMap()                              {
+
+    //Print waiting-dots
+    public void     run()                                                       {
+        try {
+            printDots();
+        } catch (InterruptedException _) {}
+    }
+    public void     printDots() throws InterruptedException                     {
+        while (true) {
+            System.out.print(".");
+            sleep(700);}
+    }
+
+    //Output map
+    public void     printMap()                                                  {
+        char[][] mapMe = engine.getMapMe();
+        char[][] mapEnemy = engine.getMapEnemy();
         System.out.println(battlefieldTitleMess);
-        System.out.println("    ╥ 0 ╥ 1 ╥ 2 ╥ 3 ╥ 4 ╥ 5 ╥ 6 ╥ 7 ╥ 8 ╥ 9 ╥                       ╥ 0 ╥ 1 ╥ 2 ╥ 3 ╥ 4 ╥ 5 ╥ 6 ╥ 7 ╥ 8 ╥ 9 ╥");
-        System.out.println("   ╭╠═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╣                      ╭╠═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╣ ");
-        for (int outer = 0; outer != engine.getMapMe().length; outer++) {
-            System.out.print(((char) (outer + 65)) + "  │");
-            for (char inner : engine.getMapMe()[outer]) {
-                System.out.print("║ ");
-                printBoat(inner);
-                System.out.print(" ");}
-            System.out.print("║                   " + ((char) (outer + 65)) + "  │");
-            for (char inner : engine.getMapEnemy()[outer]) {
-                System.out.print("║ ");
-                printBoat(inner);
-                System.out.print(" ");}
-            if (outer < engine.getMapMe().length - 1) System.out.println("║\n╞══╪╬═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╣                   ╞══╪╬═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╬═══╣ ");
-            else System.out.println("║\n   ╰╚═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╝                      ╰╚═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╝ ");}}
-    private void    printBoat(char field)                   {
+        System.out.println("    ╥  0  ╥  1  ╥  2  ╥  3  ╥  4  ╥  5  ╥  6  ╥  7  ╥  8  ╥  9  ╥                   ╥  0  ╥  1  ╥  2  ╥  3  ╥  4  ╥  5  ╥  6  ╥  7  ╥  8  ╥  9  ╥");
+        System.out.println("   ╭╠═════╬═════╬═════╬═════╬═════╬═════╬═════╬═════╬═════╬═════╣                  ╭╠═════╬═════╬═════╬═════╬═════╬═════╬═════╬═════╬═════╬═════╣ ");
+        for (int outer = 0; outer != mapMe.length; outer++) {
+            System.out.print(((char) (outer + 65)) + "  │║");
+            for (int inner = 0; inner != mapMe[outer].length; inner++)
+                if (inner < mapMe[outer].length - 1)
+                    printBoat(mapMe[outer][inner], mapMe[outer][inner + 1]);
+                else printBoat(mapMe[outer][inner], empty);
+            System.out.print("               " + ((char) (outer + 65)) + "  │║");
+            for (int inner = 0; inner != mapEnemy[outer].length; inner++)
+                if (inner < mapEnemy[outer].length - 1)
+                    printBoat(mapEnemy[outer][inner], mapEnemy[outer][inner + 1]);
+                else printBoat(mapEnemy[outer][inner], empty);
+            if (outer < mapMe.length - 1) {
+                System.out.print("\n");
+                printBordersHor(outer, mapMe);
+                System.out.print("               ");
+                printBordersHor(outer, mapEnemy);
+                System.out.print("\n");
+            } else
+                System.out.println("\n   ╰╚═════╩═════╩═════╩═════╩═════╩═════╩═════╩═════╩═════╩═════╝                  ╰╚═════╩═════╩═════╩═════╩═════╩═════╩═════╩═════╩═════╩═════╝ ");}
+    }
+    private void    printBoat(char field, char fieldNext)                       {
         switch (field) {
-            case hit: System.out.print(RED + field + RESET);        break;
-            case miss: System.out.print(BLUE + field + RESET);      break;
-            case 1: System.out.print(YELLOW + pieces + RESET);      break;
-            case 2: System.out.print(CYAN + pieces + RESET);        break;
-            case 3: System.out.print(MAGENTA + pieces + RESET);     break;
-            case 4: System.out.print(GREEN + pieces + RESET);       break;
-            default: System.out.print(empty);}
+            case hit:
+                System.out.print(RED_BACK + BLACK + " " + field + field + field + " " + RESET);
+                printBordersVer(field, fieldNext, RED_BACK);
+                break;
+            case miss:
+                System.out.print(BLUE_BACK + " " + field + field + field + " " + RESET);
+                printBordersVer(field, fieldNext, BLUE_BACK);
+                break;
+            case 1:
+                System.out.print(YELLOW     + " [" + pieces + "] " + RESET);
+                printBordersVer(field, fieldNext, RESET);
+                break;
+            case 2:
+                System.out.print(CYAN       + " [" + pieces + "] " + RESET);
+                printBordersVer(field, fieldNext, RESET);
+                break;
+            case 3:
+                System.out.print(MAGENTA    + " [" + pieces + "] " + RESET);
+                printBordersVer(field, fieldNext, RESET);
+                break;
+            case 4:
+                System.out.print(GREEN      + " [" + pieces + "] " + RESET);
+                printBordersVer(field, fieldNext, RESET);
+                break;
+            default:
+                System.out.print("     ");
+                printBordersVer(field, fieldNext, RESET);
+        }
+    }
+    private void    printBordersVer(char field, char fieldNext, String color)   {
+        if (field == fieldNext)
+            System.out.print(color + "║" + RESET);
+        else
+            System.out.print(RESET + "║");
+    }
+    private void    printBordersHor(int outer, char[][] map)                    {
+        System.out.print("╞══╪╬");
+        for (int inner = 0; inner < map[outer].length; inner++) {
+            if (map[outer][inner] == hit && map[outer + 1][inner] == hit)
+                System.out.print(RED_BACK + "═════" + RESET);
+            else if (map[outer][inner] == miss && map[outer + 1][inner] == miss)
+                System.out.print(BLUE_BACK + "═════" + RESET);
+            else
+                System.out.print("═════");
+            if (inner < map[outer].length - 1) {
+                if (map[outer][inner] == hit && map[outer + 1][inner] == hit && map[outer][inner + 1] == hit && map[outer + 1][inner + 1] == hit)
+                    System.out.print(RED_BACK + "╬" + RESET);
+                else if (map[outer][inner] == miss && map[outer + 1][inner] == miss && map[outer][inner + 1] == miss && map[outer + 1][inner + 1] == miss)
+                    System.out.print(BLUE_BACK + "╬" + RESET);
+                else
+                    System.out.print("╬");
+            } else
+                System.out.print("╣");
+        }
     }
 }

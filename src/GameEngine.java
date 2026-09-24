@@ -74,7 +74,7 @@ public class GameEngine extends Thread{
         return false;
     }
 
-    //Helper method
+    //Helper methods
     private boolean validateInput(String input)                                         {                                                                       //Checks, if input is valid or not
         return (input.length() == 2 && ((input.charAt(0) >= 97 && input.charAt(0) <= 106) || (input.charAt(0) >= 65 && input.charAt(0) <= 74)) && input.charAt(1) >= 48 && input.charAt(1) <= 57);
     }
@@ -105,7 +105,7 @@ public class GameEngine extends Thread{
     }
     private void    chooseBoatSize()                                                    {
         int[] boats = new int[4];
-        System.out.println(printer.boatsToUseMess);
+        System.out.print(printer.boatsToUseMess);
         if (scan.nextLine().charAt(0) == 'S')
             placePieces(buildBoat(5), buildBoat(4), buildBoat(3), buildBoat(3));
         else {
@@ -123,8 +123,8 @@ public class GameEngine extends Thread{
         int     id;
         String  inputStart;
         String  inputEnd;
-        System.out.println(printer.gameBeginMess2 + "1.) " + boat1 + "\n2.) " + boat2 + "\n3.) " + boat3 + "\n4.) " + boat4);
-        System.out.println(printer.gameBeginMess3);
+        System.out.print(printer.gameBeginMess2 + "1.) " + boat1 + "\n2.) " + boat2 + "\n3.) " + boat3 + "\n4.) " + boat4);
+        System.out.print(printer.gameBeginMess3);
         while (!boat1.equals(Printer.dismiss) || !boat2.equals(Printer.dismiss) || !boat3.equals(Printer.dismiss) || !boat4.equals(Printer.dismiss)) {                                  //loops, while not all boats are placed
             inputStart   = scan.next();
             inputEnd     = scan.next();
@@ -151,11 +151,10 @@ public class GameEngine extends Thread{
                 placePieces(boat1, boat2, boat3, boat4);
                 break;}
             if (!boat1.equals(boat2) || !boat1.equals(boat3) || !boat1.equals(boat4)) {
-            System.out.println(printer.stillOpenMess + "\n 1.) " + boat1 + "\n 2.) " + boat2 + "\n 3.) " + boat3 + "\n 4.) " + boat4 + "\n");
-            System.out.println(printer.placeNext);}}
+            System.out.print(printer.stillOpenMess + "\n 1.) " + boat1 + "\n 2.) " + boat2 + "\n 3.) " + boat3 + "\n 4.) " + boat4 + "\n");
+            System.out.print(printer.placeNext);}}
     }
     private boolean placeDots(int start0, int start1, int end0, int end1)               {
-        System.out.println(" s0:" + start0 + " s1:" + start1 + " e0:" + end0 + " e1:" + end1);
         int runV1 = start1;
         int runV2 = end1;
         int runH1 = start0;
@@ -197,7 +196,7 @@ public class GameEngine extends Thread{
                     mapEnemy[x][y] = Printer.hit;}}
     }
     private boolean powerUp1()                                                          {
-        System.out.println(printer.powerUp1Mess);                                                                       //makes attack list
+        System.out.print(printer.powerUp1Mess);                                                                       //makes attack list
         String input = scan.next();
         String output = "";
         try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
@@ -226,7 +225,7 @@ public class GameEngine extends Thread{
             return (char) ((input + num));}
     }
     private boolean powerUp2()                                                          {
-        System.out.println(printer.powerUp2Mess);
+        System.out.print(printer.powerUp2Mess);
         String input = scan.next();
         try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
         String output = input + Printer.empty;
@@ -249,7 +248,7 @@ public class GameEngine extends Thread{
         return true;
     }
     private boolean powerUp3()                                                          {
-        System.out.println(printer.powerUp3Mess);
+        System.out.print(printer.powerUp3Mess);
         String input = scan.next();
         String output;
         try {sleep(700);} catch (InterruptedException e) {throw new RuntimeException(e);}
@@ -283,7 +282,7 @@ public class GameEngine extends Thread{
     }
     private void    attack()                                                            {
         System.out.print(printer.attackMess);
-        System.out.println(printer.powerUpMess);
+        System.out.print(printer.powerUpMess);
         String input = scan.next();
         if ((!pU1 && !pU2 && pU3 == Printer.empty || !attackPowerUp(input))) {
             if (!validateInput(input))
@@ -355,12 +354,13 @@ public class GameEngine extends Thread{
             return true;
         } else if (input.equals(Printer.pU3)) {
             network.sendSignal(powerUp3Search(network.receiveSignal(), 0));
+            System.out.println(printer.powerUpUsedMess);
             return true;}
         return false;
     }
     private void    attacked()                                                          {
         Thread printDots = new Printer(this);
-        System.out.println(printer.enemyAttackMess);
+        System.out.print(printer.enemyAttackMess);
         printDots.start();
         String input = network.receiveSignal();
         printDots.interrupt();
